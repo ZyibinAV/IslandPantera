@@ -1,67 +1,45 @@
 package com.javarush.island.zybin.entity;
 
+/**
+ * Абстрактный класс для всех животных.
+ * Содержит общие свойства и методы для хищников и травоядных.
+ */
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Animal implements LivingEntity {
 
-    private String name;
-    private double weight;
-    private int speed;
-    private int maxFood;
-    private int maxCountInCell;
-    private List<Class<? extends  LivingEntity>> foodTypes;
-    private boolean isAlive;
+    private String type; // тип животного (например, "Волк", "Заяц")
+    private double weight; // вес животного
+    private int maxCountInCell; // максимальное количество животных в ячейке
+    private int speed;// скорость передвижения (количество ячеек)
+    private int maxFood; // количество еды для насыщения
+    private List<Class<? extends LivingEntity>> foodTypes; // типы еды, которую может есть животное
+    private boolean isAlive; // статус животного
 
-    public Animal(String name, double weight, int speed, int maxFood, int maxCountInCell, List<Class<? extends LivingEntity>> foodTypes) {
-        this.name = name;
-        this.weight = weight;
-        this.speed = speed;
-        this.maxFood = maxFood;
-        this.maxCountInCell = maxCountInCell;
-        this.foodTypes = foodTypes;
+    public Animal() {
+
         this.isAlive = true;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public String getType() {
+        return type;
     }
 
     public double getWeight() {
         return weight;
     }
 
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
-
     public int getSpeed() {
         return speed;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
     }
 
     public int getMaxFood() {
         return maxFood;
     }
 
-    public void setMaxFood(int maxFood) {
-        this.maxFood = maxFood;
-    }
-
     public int getMaxCountInCell() {
         return maxCountInCell;
-    }
-
-    public void setMaxCountInCell(int maxCountInCell) {
-        this.maxCountInCell = maxCountInCell;
     }
 
     public List<Class<? extends LivingEntity>> getFoodTypes() {
