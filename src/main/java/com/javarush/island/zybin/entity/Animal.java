@@ -42,6 +42,26 @@ public abstract class Animal implements LivingEntity {
         return maxCountInCell;
     }
 
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+
+    public void setMaxCountInCell(int maxCountInCell) {
+        this.maxCountInCell = maxCountInCell;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public void setMaxFood(int maxFood) {
+        this.maxFood = maxFood;
+    }
+
     public List<Class<? extends LivingEntity>> getFoodTypes() {
         return foodTypes;
     }
@@ -57,6 +77,7 @@ public abstract class Animal implements LivingEntity {
     public void setAlive(boolean alive) {
         isAlive = alive;
     }
+
 
     public abstract void eat(LivingEntity food);
 

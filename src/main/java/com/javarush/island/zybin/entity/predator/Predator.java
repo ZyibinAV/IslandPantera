@@ -1,5 +1,9 @@
 package com.javarush.island.zybin.entity.predator;
-
+/**
+ * Абстрактный класс для хищников.
+ * Наследуется от Animal.
+ * foodTypes будет задаваться индивидуально в конкретных классах (например, Wolf, Fox).
+ */
 
 import com.javarush.island.zybin.entity.Animal;
 
