@@ -10,7 +10,7 @@ public class Bear extends  Predator {
         setWeight(500.0);
         setMaxCountInCell(5);
         setSpeed(2);
-        setMaxFood(80);
+        setMaxFood(80.0);
     }
 
     @Override

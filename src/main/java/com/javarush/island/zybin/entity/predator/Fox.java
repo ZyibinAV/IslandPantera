@@ -10,7 +10,7 @@ public class Fox extends  Predator{
         setWeight(8.0);
         setMaxCountInCell(30);
         setSpeed(2);
-        setMaxFood(2);
+        setMaxFood(2.0);
     }
 
     @Override

@@ -10,7 +10,7 @@ public class Python extends  Predator {
         setWeight(15.0);
         setMaxCountInCell(30);
         setSpeed(1);
-        setMaxFood(3);
+        setMaxFood(3.0);
     }
 
     @Override

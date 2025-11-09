@@ -10,7 +10,7 @@ public class Wolf extends Predator{
         setWeight(50.0);
         setMaxCountInCell(30);
         setSpeed(3);
-        setMaxFood(8);
+        setMaxFood(8.0);
     }
 
     @Override

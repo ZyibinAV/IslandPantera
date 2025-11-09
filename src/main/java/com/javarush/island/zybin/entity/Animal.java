@@ -13,7 +13,7 @@ public abstract class Animal implements LivingEntity {
     private double weight; // вес животного
     private int maxCountInCell; // максимальное количество животных в ячейке
     private int speed;// скорость передвижения (количество ячеек)
-    private int maxFood; // количество еды для насыщения
+    private double maxFood; // количество еды для насыщения
     private List<Class<? extends LivingEntity>> foodTypes; // типы еды, которую может есть животное
     private boolean isAlive; // статус животного
 
@@ -34,7 +34,7 @@ public abstract class Animal implements LivingEntity {
         return speed;
     }
 
-    public int getMaxFood() {
+    public double getMaxFood() {
         return maxFood;
     }
 
@@ -58,7 +58,7 @@ public abstract class Animal implements LivingEntity {
         this.speed = speed;
     }
 
-    public void setMaxFood(int maxFood) {
+    public void setMaxFood(double maxFood) {
         this.maxFood = maxFood;
     }
 

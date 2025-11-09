@@ -10,7 +10,7 @@ public class Eagle extends  Predator {
         setWeight(6.0);
         setMaxCountInCell(20);
         setSpeed(3);
-        setMaxFood(1);
+        setMaxFood(1.0);
     }
 
     @Override
