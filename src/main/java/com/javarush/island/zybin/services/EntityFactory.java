@@ -128,7 +128,6 @@ public class EntityFactory {
         }
         return "Unknown";
     }
-
     /**
      * Возвращает простое имя класса (например, "Wolf", "Grass").
      */
