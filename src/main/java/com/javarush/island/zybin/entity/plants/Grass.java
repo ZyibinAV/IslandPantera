@@ -4,7 +4,7 @@ import com.javarush.island.zybin.entity.LivingEntity;
 
 public class Grass implements LivingEntity {
 
-    private String name = "Grass";
+    private String type = "Grass";
     private double weight = 1.0;
     private int maxCountInCell = 200;
     private boolean isAlive;
@@ -13,8 +13,8 @@ public class Grass implements LivingEntity {
           this.isAlive = true;
     }
 
-    public String getName() {
-        return name;
+    public String getType() {
+        return type;
     }
 
     public double getWeight() {
