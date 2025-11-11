@@ -18,10 +18,7 @@ public class Wolf extends Predator{
 
     }
 
-    @Override
-    public void choiceMove() {
 
-    }
 
     @Override
     public void reproduction() {

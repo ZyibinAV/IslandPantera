@@ -18,10 +18,7 @@ public class Bear extends  Predator {
 
     }
 
-    @Override
-    public void choiceMove() {
 
-    }
 
     @Override
     public void reproduction() {

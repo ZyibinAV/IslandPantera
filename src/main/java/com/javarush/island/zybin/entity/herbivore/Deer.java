@@ -17,10 +17,7 @@ public class Deer extends Herbivore{
 
     }
 
-    @Override
-    public void choiceMove() {
 
-    }
 
     @Override
     public void reproduction() {

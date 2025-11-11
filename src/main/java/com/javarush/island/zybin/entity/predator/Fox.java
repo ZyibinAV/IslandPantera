@@ -18,10 +18,7 @@ public class Fox extends  Predator{
 
     }
 
-    @Override
-    public void choiceMove() {
 
-    }
 
     @Override
     public void reproduction() {

@@ -5,6 +5,9 @@ package com.javarush.island.zybin.entity;
  * Содержит общие свойства и методы для хищников и травоядных.
  */
 
+import com.javarush.island.zybin.entity.island.Cell;
+import com.javarush.island.zybin.services.MovementController;
+
 import java.util.List;
 
 public abstract class Animal implements LivingEntity {
@@ -16,6 +19,8 @@ public abstract class Animal implements LivingEntity {
     private double maxFood; // количество еды для насыщения
     private List<Class<? extends LivingEntity>> foodTypes; // типы еды, которую может есть животное
     private boolean isAlive; // статус животного
+
+    private MovementController movementController;
 
     public Animal() {
 
@@ -80,6 +85,16 @@ public abstract class Animal implements LivingEntity {
 
 
     public abstract void eat(LivingEntity food);
+    // Метод, который будет вызываться симуляцией
+    public void move(Cell currentCell) {
+        if (movementController == null) {
+            throw new IllegalStateException("MovementController не установлен. Сначала вызовите setMovementController.");
+        }
+        movementController.moveAnimal(this, currentCell);
+    }
+    // Устанавливаем контроллер извне (например, в симуляции)
+    public void setMovementController(MovementController controller) {
+        this.movementController = controller;
+    }
 
-    public abstract void choiceMove();
 }

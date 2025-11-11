@@ -18,10 +18,7 @@ public class Eagle extends  Predator {
 
     }
 
-    @Override
-    public void choiceMove() {
 
-    }
 
     @Override
     public void reproduction() {

@@ -18,10 +18,7 @@ public class Rabbit extends Herbivore {
 
     }
 
-    @Override
-    public void choiceMove() {
 
-    }
 
     @Override
     public void reproduction() {
