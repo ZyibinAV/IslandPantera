@@ -25,7 +25,7 @@ public abstract class Animal implements LivingEntity {
 
     // --- Обновляем на AtomicInteger ---
     private final AtomicInteger currentFoodCount = new AtomicInteger(0);
-
+    // добавим контроллеры
     private MovementController movementController;
     private FeedingController feedingController;
 
@@ -54,6 +54,15 @@ public abstract class Animal implements LivingEntity {
         return maxCountInCell;
     }
 
+    public List<Class<? extends LivingEntity>> getFoodTypes() {
+        return foodTypes;
+    }
+
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+
     public void setType(String type) {
         this.type = type;
     }
@@ -78,24 +87,21 @@ public abstract class Animal implements LivingEntity {
         this.maxFood = maxFood;
     }
 
-    public List<Class<? extends LivingEntity>> getFoodTypes() {
-        return foodTypes;
-    }
-
     public void setFoodTypes(List<Class<? extends LivingEntity>> foodTypes) {
         this.foodTypes = foodTypes;
-    }
-
-    public boolean isAlive() {
-        return isAlive;
     }
 
     public void setAlive(boolean alive) {
         isAlive = alive;
     }
 
-
-    public abstract void eat(LivingEntity food);
+    // Устанавливаем контроллер извне (например, в симуляции)
+    public void setMovementController(MovementController controller) {
+        this.movementController = controller;
+    }
+    public void setFeedingController(FeedingController controller) {
+        this.feedingController = controller;
+    }
 
     // Метод, который будет вызываться симуляцией
     public void move(Cell currentCell) {
@@ -111,13 +117,7 @@ public abstract class Animal implements LivingEntity {
         feedingController.feedAnimal( this, currentCell);
     }
 
-    // Устанавливаем контроллер извне (например, в симуляции)
-    public void setMovementController(MovementController controller) {
-        this.movementController = controller;
-    }
-    public void setFeedingController(FeedingController controller) {
-        this.feedingController = controller;
-    }
+
 
     // --- Метод для уменьшения веса за ход (голод) ---
     public void reduceWeight() {
