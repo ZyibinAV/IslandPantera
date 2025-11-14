@@ -89,7 +89,8 @@ public class FeedingController {
 
     /**
      * Метод, который пытается покормить животное в текущей ячейке.
-     * @param animal Животное, которое ест.
+     *
+     * @param animal      Животное, которое ест.
      * @param currentCell Ячейка, в которой животное находится.
      */
     public void feedAnimal(Animal animal, Cell currentCell) {
@@ -118,8 +119,7 @@ public class FeedingController {
                     if (currentCell.getEntities().contains(food)) {
                         if (food instanceof Animal) {
                             ((Animal) food).setAlive(false); // Жертва умирает
-                        }
-                        else if(food instanceof Grass) {
+                        } else if (food instanceof Grass) {
                             ((Grass) food).setAlive(false); // Трава "умирает"
                         }
                         currentCell.removeEntity(food);
@@ -138,6 +138,7 @@ public class FeedingController {
             }
         }
     }
+
     /**
      * Вспомогательный метод для получения типа сущности.
      */

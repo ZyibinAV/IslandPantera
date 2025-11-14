@@ -1,6 +1,7 @@
 package com.javarush.island.zybin.entity.plants;
 
 import com.javarush.island.zybin.entity.LivingEntity;
+import com.javarush.island.zybin.services.ReproductionController;
 
 public class Grass implements LivingEntity {
 
@@ -9,8 +10,10 @@ public class Grass implements LivingEntity {
     private int maxCountInCell = 200;
     private boolean isAlive;
 
+    private ReproductionController reproductionController;
+
     public Grass() {
-          this.isAlive = true;
+        this.isAlive = true;
     }
 
     public String getType() {
@@ -33,8 +36,15 @@ public class Grass implements LivingEntity {
         isAlive = alive;
     }
 
-    @Override
-    public void reproduction() {
+    public void setReproductionController(ReproductionController controller) {
+        this.reproductionController = controller;
+    }
 
+    @Override
+    public void reproduce() {
+        if (reproductionController == null) {
+            throw new IllegalStateException("ReproductionController не установлен.");
+        }
+        reproductionController.reproduceGrass(this);
     }
 }

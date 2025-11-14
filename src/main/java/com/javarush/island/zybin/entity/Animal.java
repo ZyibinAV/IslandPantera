@@ -8,6 +8,7 @@ package com.javarush.island.zybin.entity;
 import com.javarush.island.zybin.entity.island.Cell;
 import com.javarush.island.zybin.services.FeedingController;
 import com.javarush.island.zybin.services.MovementController;
+import com.javarush.island.zybin.services.ReproductionController;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,6 +29,7 @@ public abstract class Animal implements LivingEntity {
     // добавим контроллеры
     private MovementController movementController;
     private FeedingController feedingController;
+    private ReproductionController reproductionController;
 
     public Animal() {
 
@@ -40,6 +42,10 @@ public abstract class Animal implements LivingEntity {
 
     public double getWeight() {
         return weight;
+    }
+
+    public double getInitialWeight() {
+        return initialWeight;
     }
 
     public int getSpeed() {
@@ -99,8 +105,13 @@ public abstract class Animal implements LivingEntity {
     public void setMovementController(MovementController controller) {
         this.movementController = controller;
     }
+
     public void setFeedingController(FeedingController controller) {
         this.feedingController = controller;
+    }
+
+    public void setReproductionController(ReproductionController controller) {
+        this.reproductionController = controller;
     }
 
     // Метод, который будет вызываться симуляцией
@@ -110,18 +121,26 @@ public abstract class Animal implements LivingEntity {
         }
         movementController.moveAnimal(this, currentCell);
     }
+
     public void eat(Cell currentCell) {
         if (feedingController == null) {
             throw new IllegalStateException("FeedingController не установлен. Сначала вызовите setFeedingController.");
         }
-        feedingController.feedAnimal( this, currentCell);
+        feedingController.feedAnimal(this, currentCell);
     }
 
+    @Override
+    public void reproduce() {
+        if (reproductionController == null) {
+            throw new IllegalStateException("ReproductionController не установлен.");
+        }
+        reproductionController.reproduceAnimal(this);
+    }
 
 
     // --- Метод для уменьшения веса за ход (голод) ---
     public void reduceWeight() {
-        if(isAlive) {
+        if (isAlive) {
             double weightLoss = initialWeight * 0.1; // 10% от изначального веса
             weight -= weightLoss;
             if (weight <= 0) {

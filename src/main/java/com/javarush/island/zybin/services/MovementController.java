@@ -18,9 +18,11 @@ public class MovementController {
     public MovementController(Island island) {
         this.island = island;
     }
+
     /**
      * Метод, который перемещает животное в случайную ячейку в пределах его скорости (speed).
-     * @param animal Животное, которое нужно переместить.
+     *
+     * @param animal      Животное, которое нужно переместить.
      * @param currentCell Ячейка, в которой животное находится сейчас.
      */
     public void moveAnimal(Animal animal, Cell currentCell) {
@@ -43,7 +45,7 @@ public class MovementController {
         int newRow = currentRow + deltaRow;
         int newCol = currentCol + deltaCol;
         // Проверяем, не выходит ли новая позиция за границы острова
-        if (newRow < 0 || newRow >= island.getRows()|| newCol < 0 || newCol >= island.getCols()) {
+        if (newRow < 0 || newRow >= island.getRows() || newCol < 0 || newCol >= island.getCols()) {
             return; //животное не может выйти за границы - остается на месте
         }
         Cell targetCell = island.getCell(newRow, newCol);

@@ -39,11 +39,7 @@ public class EntityFactory {
      * Создаёт и размещает животных и растения (траву) в случайных ячейках.
      */
     public void populateIsland() {
-        List<Class<? extends LivingEntity>> entityTypes = Arrays.asList(
-                Bison.class, Boar.class, Caterpillar.class, Deer.class, Duck.class, Goat.class,
-                Horse.class, Mouse.class, Rabbit.class, Sheep.class, Bear.class, Eagle.class,
-                Fox.class, Python.class, Wolf.class, Grass.class
-        );
+        List<Class<? extends LivingEntity>> entityTypes = Arrays.asList(Bison.class, Boar.class, Caterpillar.class, Deer.class, Duck.class, Goat.class, Horse.class, Mouse.class, Rabbit.class, Sheep.class, Bear.class, Eagle.class, Fox.class, Python.class, Wolf.class, Grass.class);
         // Запускаем создание животных
         for (Class<? extends LivingEntity> entityType : entityTypes) {
             int created = createAndDistribute(entityType);
@@ -93,10 +89,10 @@ public class EntityFactory {
                         return;
                     }
                     if (cell.getCountByType(clazz) < maxCount) {
-                            if (cell.getCountByType(clazz) < maxCount) {
-                                cell.addEntity(entity);
-                                placedCount.incrementAndGet();
-                            }
+                        if (cell.getCountByType(clazz) < maxCount) {
+                            cell.addEntity(entity);
+                            placedCount.incrementAndGet();
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -115,19 +111,22 @@ public class EntityFactory {
         executor.shutdown();
         return placedCount.get(); // возвращаем количество успешно размещенных сущностей
     }
+
     /**
      * Вспомогательный метод для получения типа сущности из поля type.
+     *
      * @param entity Экземпляр сущности.
      * @return Значение поля type.
      */
     private String getEntityType(LivingEntity entity) {
         if (entity instanceof Animal) {
-            return ((Animal)entity).getType();
+            return ((Animal) entity).getType();
         } else if (entity instanceof Grass) {
-            return ((Grass)entity).getType();
+            return ((Grass) entity).getType();
         }
         return "Unknown";
     }
+
     /**
      * Возвращает простое имя класса (например, "Wolf", "Grass").
      */
