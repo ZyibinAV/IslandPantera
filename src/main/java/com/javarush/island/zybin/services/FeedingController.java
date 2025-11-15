@@ -96,7 +96,7 @@ public class FeedingController {
      * @param currentCell Ячейка, в которой животное находится.
      */
     public void feedAnimal(Animal animal, Cell currentCell) {
-        if (animal.isAlive() || animal.isFull()) {
+        if (!animal.isAlive() || animal.isFull()) {
             return;
         }
         String animalType = animal.getType();
@@ -127,7 +127,10 @@ public class FeedingController {
                                 statisticsCollector.incrementEaten(prey.getType()); // Статистика съеденных
                             }
                         } else if (food instanceof Grass) {
-                            ((Grass) food).setAlive(false); // Трава "умирает"
+                            Grass grass = (Grass) food;
+                            if (grass.isAlive()) {
+                                grass.setAlive(false); // Трава "умирает"
+                            }
                         }
                         currentCell.removeEntity(food);
                         double foodWeight = 0;

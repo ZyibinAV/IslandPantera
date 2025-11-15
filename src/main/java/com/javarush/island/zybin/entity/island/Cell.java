@@ -11,9 +11,9 @@ import java.util.List;
  */
 
 public class Cell {
-    private List<LivingEntity> entities; // список живых сущностей в ячейке
-    private int row;// номер строки ячейки на острове
-    private int col; // номер столбца ячейки на острове
+    private final List<LivingEntity> entities; // список живых сущностей в ячейке
+    private final int row;// номер строки ячейки на острове
+    private final int col; // номер столбца ячейки на острове
 
     public Cell(int row, int col) {
         this.entities = new ArrayList<>();
@@ -62,7 +62,22 @@ public class Cell {
      */
     public int getCountByType(Class<?> clazz) {
         synchronized (entities) {
-            return (int) entities.stream().filter(e -> clazz.isAssignableFrom(e.getClass())).count();
+            return (int) entities.stream()
+                    .filter(e -> clazz.isAssignableFrom(e.getClass()))
+                    .count();
+        }
+    }
+    // --- НОВЫЙ МЕТОД: атомарно проверяет и добавляет ---
+    public boolean tryAddEntity(LivingEntity entity, int maxCount, Class<? extends LivingEntity> clazz) {
+        synchronized (entities) {
+            int currentCount = (int) entities.stream()
+                    .filter(e -> clazz.isAssignableFrom(e.getClass()))
+                    .count();
+            if (currentCount < maxCount) {
+                entities.add(entity);
+                return true;
+            }
+            return false;
         }
     }
 

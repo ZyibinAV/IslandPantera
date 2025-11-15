@@ -40,11 +40,9 @@ public class Grass implements LivingEntity {
         this.reproductionController = controller;
     }
 
+
     @Override
     public void reproduce() {
-        if (reproductionController == null) {
-            throw new IllegalStateException("ReproductionController не установлен.");
-        }
-        reproductionController.reproduceGrass(this);
+
     }
 }

@@ -14,35 +14,24 @@ public class ReproductionController {
     private final Island island;
     private final StatisticsCollector statisticsCollector;
 
-    public ReproductionController(Island island, StatisticsCollector statisticsCollector) {
+    // --- Добавим поля для контроллеров ---
+    private final MovementController movementController;
+    private final FeedingController feedingController;
+    private  ReproductionController selfReference;
+
+    public ReproductionController(Island island, StatisticsCollector statisticsCollector,
+                                  MovementController movementController,
+                                  FeedingController feedingController) {
         this.island = island;
         this.statisticsCollector = statisticsCollector;
+        this.movementController = movementController;
+        this.feedingController = feedingController;
+    }
+    // --- Новый метод для установки selfReference ---
+    public void setSelfReference(ReproductionController self) {
+        this.selfReference = self;
     }
 
-    /**
-     * Метод, который вызывается из Animal.reproduce().
-     *
-     * @param animal Животное, которое размножается.
-     */
-    public void reproduceAnimal(Animal animal) {
-        // Логика: найти ячейку, в которой находится животное, и проверить условия
-        // Это требует, чтобы Animal знал, в какой ячейке он находится.
-        // Это можно реализовать, передавая ячейку в вызов reproduce, или храня ссылку на ячейку.
-        // Но это усложнит интерфейс. Лучше вызывать reproduction из симуляции для всей ячейки.
-        // Поэтому этот метод не будет использоваться напрямую.
-        throw new UnsupportedOperationException("Reproduce для животных должен вызываться в контексте ячейки.");
-    }
-
-    /**
-     * Метод, который вызывается из Grass.reproduce().
-     *
-     * @param grass Трава, которая размножается.
-     */
-    public void reproduceGrass(Grass grass) {
-        // Логика: найти ячейку, в которой находится трава, и проверить условия
-        // Аналогично — вызов должен происходить в контексте ячейки.
-        throw new UnsupportedOperationException("Reproduce для травы должен вызываться в контексте ячейки.");
-    }
 
     /**
      * Основной метод, вызываемый из симуляции для ячейки.
@@ -81,6 +70,11 @@ public class ReproductionController {
                     child.setMaxFood(parent.getMaxFood());
                     child.setFoodTypes(parent.getFoodTypes());
 
+                    // --- УСТАНОВКА КОНТРОЛЛЕРОВ ---
+                    child.setMovementController(movementController);
+                    child.setFeedingController(feedingController);
+                    child.setReproductionController(this.selfReference);
+
                     synchronized (cell) {
                         if (cell.getCountByType(clazz) < maxCount) {
                             cell.addEntity(child);
@@ -100,12 +94,13 @@ public class ReproductionController {
 
         int currentGrassCount = grasses.size();
         int maxGrassCount = grasses.isEmpty() ? 200 : grasses.get(0).getMaxCountInCell();
-        int newGrassToAdd = (int) (currentGrassCount * 01);
+        double newGrassToAdd = (double) (currentGrassCount * 0.1);
 
         if (currentGrassCount + newGrassToAdd <= maxGrassCount) {
             synchronized (cell) {
                 for (int i = 0; i < newGrassToAdd; i++) {
-                    cell.addEntity(new Grass());
+                    Grass newGrass = new Grass();
+                    cell.addEntity(newGrass);
                     statisticsCollector.incrementBorn("Grass"); // статистика выросшей травы
                 }
             }

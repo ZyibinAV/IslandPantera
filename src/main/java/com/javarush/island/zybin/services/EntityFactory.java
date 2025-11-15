@@ -23,15 +23,23 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class EntityFactory {
     private final Island island;
     private final Random random = new Random();
-    private final Map<String, Integer> statistics = new HashMap<>(); // статистика по типу сущности
+    private final MovementController movementController;
+    private final FeedingController feedingController;
+    private final ReproductionController reproductionController;
+
+   private final Map<String, Integer> statistics = new HashMap<>(); // статистика по типу сущности
 
     /**
      * Конструктор фабрики.
      *
      * @param island Остров, на котором будут размещаться сущности.
      */
-    public EntityFactory(Island island) {
+    public EntityFactory(Island island, MovementController movementController,
+                         FeedingController feedingController, ReproductionController reproductionController) {
         this.island = island;
+        this.movementController = movementController;
+        this.feedingController = feedingController;
+        this.reproductionController = reproductionController;
     }
 
     /**
@@ -39,14 +47,23 @@ public class EntityFactory {
      * Создаёт и размещает животных и растения (траву) в случайных ячейках.
      */
     public void populateIsland() {
-        List<Class<? extends LivingEntity>> entityTypes = Arrays.asList(Bison.class, Boar.class, Caterpillar.class, Deer.class, Duck.class, Goat.class, Horse.class, Mouse.class, Rabbit.class, Sheep.class, Bear.class, Eagle.class, Fox.class, Python.class, Wolf.class, Grass.class);
+        List<Class<? extends LivingEntity>> entityTypes = Arrays.asList(Bison.class,
+                Boar.class, Caterpillar.class, Deer.class, Duck.class, Goat.class,
+                Horse.class, Mouse.class, Rabbit.class, Sheep.class, Bear.class,
+                Eagle.class, Fox.class, Python.class, Wolf.class, Grass.class);
         // Запускаем создание животных
         for (Class<? extends LivingEntity> entityType : entityTypes) {
             int created = createAndDistribute(entityType);
             String typeName = getSimpleTypeName(entityType);
             statistics.put(typeName, created);
         }
+
+        int grassCount = createAndDistribute(Grass.class);
+        statistics.put("Grass", grassCount);
+
+        // --- Вызовем вывод статистики ---
         printStatistics();
+        // --- /Вызовем ---
 
     }
 
@@ -62,7 +79,7 @@ public class EntityFactory {
         int totalToCreate = random.nextInt(1000) + 50;
         AtomicInteger placedCount = new AtomicInteger(0);
         // Используем ExecutorService для многопоточного размещения
-        ExecutorService executor = Executors.newFixedThreadPool(8);// 8 потоков
+        ExecutorService executor = Executors.newFixedThreadPool(10);// 8 потоков
         List<Future<?>> futures = new ArrayList<>();
 
         for (int i = 0; i < totalToCreate; i++) {
@@ -70,6 +87,13 @@ public class EntityFactory {
                 try {
                     // создаем обьект сущности
                     T entity = clazz.getDeclaredConstructor().newInstance();
+                    if (entity instanceof Animal animal) {
+                        animal.setMovementController(movementController);
+                        animal.setFeedingController(feedingController);
+                        animal.setReproductionController(reproductionController);
+                    } else if (entity instanceof  Grass grass) {
+                        grass.setReproductionController(reproductionController);
+                    }
                     // получаем тип сущности из поля type
                     String entityType = getEntityType(entity);
                     // выбираем случайную ячейку на острове
@@ -88,12 +112,9 @@ public class EntityFactory {
                         // Неизвестный тип сущности — пропускаем
                         return;
                     }
-                    if (cell.getCountByType(clazz) < maxCount) {
-                        if (cell.getCountByType(clazz) < maxCount) {
-                            cell.addEntity(entity);
-                            placedCount.incrementAndGet();
-                        }
-                    }
+                   if (cell.tryAddEntity(entity, maxCount, clazz)) {
+                       placedCount.incrementAndGet();
+                   }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -50,21 +50,23 @@ public class MovementController {
         }
         Cell targetCell = island.getCell(newRow, newCol);
         // Проверяем, не превышено ли максимальное количество животных в целевой ячейке
-        if (targetCell.getCountByType(animal.getClass()) < animal.getMaxCountInCell()) {
-            // Перемещаем животное: удаляем из старой ячейки, добавляем в новую
-            synchronized (currentCell) {
-                if (currentCell.getEntities().contains(animal)) {
+        if (targetCell.getCountByType(animal.getClass()) >= animal.getMaxCountInCell()) {
+            return;
+        }
+        // --- ИСПРАВЛЕНИЕ: захват мониторов в фиксированном порядке ---
+        Cell firstLock = currentCell;
+        Cell secondLock = targetCell;
+        if (System.identityHashCode(currentCell) > System.identityHashCode(targetCell)) {
+            firstLock = targetCell;
+            secondLock = currentCell;
+        }
+           synchronized (firstLock) {
+            synchronized (secondLock) {
+                // Проверяем снова, т.к. состояние могло измениться
+                if (currentCell.getEntities().contains(animal) &&
+                    targetCell.getCountByType(animal.getClass()) < animal.getMaxCountInCell()) {
                     currentCell.removeEntity(animal);
-                }
-            }
-            synchronized (targetCell) {
-                if (targetCell.getCountByType(animal.getClass()) < animal.getMaxCountInCell()) {
                     targetCell.addEntity(animal);
-                } else {
-                    // Если за время между проверкой и синхронизацией лимит превысили — возвращаем в старую
-                    synchronized (currentCell) {
-                        currentCell.addEntity(animal);
-                    }
                 }
             }
         }

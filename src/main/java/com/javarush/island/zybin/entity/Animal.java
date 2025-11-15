@@ -129,13 +129,7 @@ public abstract class Animal implements LivingEntity {
         feedingController.feedAnimal(this, currentCell);
     }
 
-    @Override
-    public void reproduce() {
-        if (reproductionController == null) {
-            throw new IllegalStateException("ReproductionController не установлен.");
-        }
-        reproductionController.reproduceAnimal(this);
-    }
+
 
 
     // --- Метод для уменьшения веса за ход (голод) ---

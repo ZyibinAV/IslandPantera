@@ -7,10 +7,9 @@ import com.javarush.island.zybin.entity.island.Cell;
 import com.javarush.island.zybin.entity.island.Island;
 import com.javarush.island.zybin.services.*;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
 
 
 /**
@@ -22,10 +21,10 @@ import java.util.concurrent.TimeUnit;
 public class Simulation {
 
     private final Island island;
-    private final EntityFactory factory;
+    private EntityFactory factory;
     private final MovementController movementController;
     private final FeedingController feedingController;
-    private final ReproductionController reproductionController;
+    private  ReproductionController reproductionController;
     private final StatisticsCollector statisticsCollector;
 
     private final ExecutorService executorService;
@@ -35,17 +34,25 @@ public class Simulation {
 
     public Simulation(Island island) {
         this.island = island;
-        this.factory = new EntityFactory(island);
         this.statisticsCollector = new StatisticsCollector(island);
         this.movementController = new MovementController(island);
         this.feedingController = new FeedingController(island, statisticsCollector);
-        this.reproductionController = new ReproductionController(island, statisticsCollector);
+
+       // this.factory = new EntityFactory(island, movementController, feedingController, reproductionController);
 
         this.executorService = Executors.newFixedThreadPool(10);
         this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
     }
 
     public void start() {
+        // Создаём ReproductionController
+        this.reproductionController = new ReproductionController(island, statisticsCollector,
+                movementController, feedingController);
+        // Устанавливаем self-reference
+        this.reproductionController.setSelfReference(this.reproductionController);
+        // Создаём EntityFactory
+        this.factory = new EntityFactory(island, movementController, feedingController, reproductionController);
+
         // Инициализация симуляции
         factory.populateIsland();
         System.out.println("Симуляция начата. Остров заполнен сущностями.");
@@ -91,38 +98,67 @@ public class Simulation {
                 }
             }
         }
-        // 2. Животные едят
+        // --- ФАЗА 1: ЕДА ---
+        List<Future<?>> eatFutures = new ArrayList<>();
         for (int row = 0; row < island.getRows(); row++) {
             for (int col = 0; col < island.getCols(); col++) {
                 Cell cell = island.getCell(row, col);
                 for (LivingEntity entity : cell.getEntities()) {
                     if (entity instanceof Animal animal && animal.isAlive()) {
-                        animal.setFeedingController(feedingController);
-                        executorService.submit(() -> animal.eat(cell));
+                       Future<?> future = executorService.submit(() -> animal.eat(cell));
+                       eatFutures.add(future);
                     }
                 }
             }
         }
-        // 3. Животные перемещаются
+        // Ждём завершения всех задач "есть"
+        for (Future<?> future : eatFutures) {
+            try{
+                future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        // --- ФАЗА 2: ПЕРЕМЕЩЕНИЕ ---
+        List<Future<?>> moveFutures = new ArrayList<>();
         for (int row = 0; row < island.getRows(); row++) {
             for (int col = 0; col < island.getCols(); col++) {
                 Cell cell = island.getCell(row, col);
                 for (LivingEntity entity : cell.getEntities()) {
                     if (entity instanceof Animal animal && animal.isAlive()) {
-                        animal.setMovementController(movementController);
-                        executorService.submit(() -> animal.move(cell));
+                        Future<?> future = executorService.submit(() -> animal.move(cell));
+                        moveFutures.add(future);
                     }
                 }
             }
         }
-        // 4. Размножение
+        // Ждём завершения всех задач "двигаться"
+        for (Future<?> future : moveFutures) {
+            try{
+                future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        // --- ФАЗА 3: РАЗМНОЖЕНИЕ ---
+        List<Future<?>> reproduceFutures = new ArrayList<>();
         for (int row = 0; row < island.getRows(); row++) {
             for (int col = 0; col < island.getCols(); col++) {
                 Cell cell = island.getCell(row, col);
-                executorService.submit(() -> reproductionController.reproduceInCell(cell));
+                Future<?> future = executorService.submit(() -> reproductionController.reproduceInCell(cell));
+                reproduceFutures.add(future);
             }
         }
-        // 5. Сброс счётчиков насыщения
+        // Ждём завершения всех задач "размножаться"
+        for (Future<?> future : reproduceFutures) {
+            try {
+                future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        // --- СБРОС СЫТОСТИ ---
+        // Теперь можно безопасно сбросить, т.к. фаза "есть" уже завершена
         for (int row = 0; row < island.getRows(); row++) {
             for (int col = 0; col < island.getCols(); col++) {
                 Cell cell = island.getCell(row, col);
