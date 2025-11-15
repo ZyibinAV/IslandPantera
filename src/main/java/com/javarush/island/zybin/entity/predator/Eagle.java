@@ -24,7 +24,7 @@ public class Eagle extends  Predator {
 
 
     @Override
-    public void reproduction() {
+    public void reproduce() {
 
     }
 }

@@ -35,7 +35,7 @@ public class Simulation {
 
     public Simulation(Island island) {
         this.island = island;
-        this.factory - new EntityFactory(island);
+        this.factory = new EntityFactory(island);
         this.statisticsCollector = new StatisticsCollector(island);
         this.movementController = new MovementController(island);
         this.feedingController = new FeedingController(island, statisticsCollector);
@@ -86,7 +86,7 @@ public class Simulation {
                 for (LivingEntity entity : cell.getEntities()) {
                     if (entity instanceof Animal animal) {
                         animal.reduceWeight();
-                        e
+
                     }
                 }
             }

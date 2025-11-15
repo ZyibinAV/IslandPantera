@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class FeedingController {
     private final Island island;
+    private final StatisticsCollector statisticsCollector;
 
     // Статическая таблица шансов поедания (в %)
     private static final Map<String, Map<String, Integer>> FEEDING_CHANCES = Map.ofEntries(
@@ -83,8 +84,9 @@ public class FeedingController {
     );
 
 
-    public FeedingController(Island island) {
+    public FeedingController(Island island, StatisticsCollector statisticsCollector) {
         this.island = island;
+        this.statisticsCollector = statisticsCollector;
     }
 
     /**
@@ -118,7 +120,12 @@ public class FeedingController {
                 synchronized (currentCell) {
                     if (currentCell.getEntities().contains(food)) {
                         if (food instanceof Animal) {
-                            ((Animal) food).setAlive(false); // Жертва умирает
+                            Animal prey = (Animal) food;
+                            if(prey.isAlive()){
+                                prey.setAlive(false);
+                                statisticsCollector.incrementDied(prey.getType()); // Статистика умерших
+                                statisticsCollector.incrementEaten(prey.getType()); // Статистика съеденных
+                            }
                         } else if (food instanceof Grass) {
                             ((Grass) food).setAlive(false); // Трава "умирает"
                         }

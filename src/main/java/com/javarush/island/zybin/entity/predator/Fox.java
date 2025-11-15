@@ -26,7 +26,7 @@ public class Fox extends  Predator{
 
 
     @Override
-    public void reproduction() {
+    public void reproduce() {
 
     }
 }

@@ -55,9 +55,9 @@ public class StatisticsCollector {
             }
         }
         for (var entry : totals.entrySet()) {
-            System.out.printf("%-15s: %d%n", entry.getKey(), entry.getValue());
+            System.out.printf("  %s: %d%n", entry.getKey(), entry.getValue());
         }
-        System.out.printf("\n За такт:");
+        System.out.println("\n За такт:");
         System.out.println("Рождено:");
         for (var entry : bornThisTurn.entrySet()) {
             System.out.printf(" %s: %d%n", entry.getKey(), entry.getValue().get());

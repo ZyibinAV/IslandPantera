@@ -22,7 +22,7 @@ public class Duck extends Herbivore{
 
 
     @Override
-    public void reproduction() {
+    public void reproduce() {
 
     }
 }

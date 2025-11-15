@@ -22,7 +22,7 @@ public class Mouse extends Herbivore{
 
 
     @Override
-    public void reproduction() {
+    public void reproduce() {
 
     }
 }

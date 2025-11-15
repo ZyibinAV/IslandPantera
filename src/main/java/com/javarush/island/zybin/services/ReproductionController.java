@@ -12,9 +12,11 @@ import java.util.stream.Collectors;
 
 public class ReproductionController {
     private final Island island;
+    private final StatisticsCollector statisticsCollector;
 
-    public ReproductionController(Island island) {
+    public ReproductionController(Island island, StatisticsCollector statisticsCollector) {
         this.island = island;
+        this.statisticsCollector = statisticsCollector;
     }
 
     /**
@@ -49,7 +51,11 @@ public class ReproductionController {
      */
     public void reproduceInCell(Cell cell) {
         // животные
-        Map<String, List<Animal>> animalsByType = cell.getEntities().stream().filter(e -> e instanceof Animal && ((Animal) e).isAlive()).map(e -> (Animal) e).filter(a -> a.getWeight() >= a.getInitialWeight() * 0.5).collect(Collectors.groupingBy(Animal::getType));
+        Map<String, List<Animal>> animalsByType = cell.getEntities().stream()
+                .filter(e -> e instanceof Animal && ((Animal) e).isAlive())
+                .map(e -> (Animal) e)
+                .filter(a -> a.getWeight() >= a.getInitialWeight() * 0.5)
+                .collect(Collectors.groupingBy(Animal::getType));
 
         for (List<Animal> sameTypeAnimals : animalsByType.values()) {
             if (sameTypeAnimals.size() < 2) {
@@ -78,6 +84,7 @@ public class ReproductionController {
                     synchronized (cell) {
                         if (cell.getCountByType(clazz) < maxCount) {
                             cell.addEntity(child);
+                            statisticsCollector.incrementBorn(child.getType()); //статистика рожденных
                         }
                     }
                 } catch (Exception e) {
@@ -86,7 +93,10 @@ public class ReproductionController {
             }
         }
         // Трава
-        List<Grass> grasses = cell.getEntities().stream().filter(e -> e instanceof Grass && ((Grass) e).isAlive()).map(e -> (Grass) e).toList();
+        List<Grass> grasses = cell.getEntities().stream()
+                .filter(e -> e instanceof Grass && ((Grass) e).isAlive())
+                .map(e -> (Grass) e)
+                .toList();
 
         int currentGrassCount = grasses.size();
         int maxGrassCount = grasses.isEmpty() ? 200 : grasses.get(0).getMaxCountInCell();
@@ -96,6 +106,7 @@ public class ReproductionController {
             synchronized (cell) {
                 for (int i = 0; i < newGrassToAdd; i++) {
                     cell.addEntity(new Grass());
+                    statisticsCollector.incrementBorn("Grass"); // статистика выросшей травы
                 }
             }
         }

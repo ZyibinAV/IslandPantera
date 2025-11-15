@@ -25,7 +25,7 @@ public class Python extends  Predator {
 
 
     @Override
-    public void reproduction() {
+    public void reproduce() {
 
     }
 }
