@@ -83,6 +83,8 @@ public class Simulation {
     }
 
     private void runTurn() {
+        // Увеличиваем счётчик тактов
+        statisticsCollector.incrementTurn();
         // Сброс счётчиков статистики в начале такта
         statisticsCollector.resetCounters();
 

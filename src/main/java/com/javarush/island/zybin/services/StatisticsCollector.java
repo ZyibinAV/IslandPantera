@@ -17,6 +17,7 @@ public class StatisticsCollector {
     private final Map<String, AtomicInteger> bornThisTurn = new ConcurrentHashMap<>();
     private final Map<String, AtomicInteger> eatenThisTurn = new ConcurrentHashMap<>();
     private final Map<String, AtomicInteger> diedThisTurn = new ConcurrentHashMap<>();
+    private final AtomicInteger currentTurn = new AtomicInteger(0);
 
     public StatisticsCollector(Island island) {
         this.island = island;
@@ -39,9 +40,13 @@ public class StatisticsCollector {
     public void incrementDied(String type) {
         diedThisTurn.computeIfAbsent(type, k-> new AtomicInteger(0)).incrementAndGet();
     }
+    // счетчик тактов
+    public void incrementTurn() {
+        currentTurn.incrementAndGet();
+    }
 
     public void printStats() {
-        System.out.println("\n Статистика за текущий такт:");
+        System.out.println("\n Такт: " + currentTurn.get());
         System.out.println("============================");
 
         Map<String, Integer> totals = new HashMap<>();
