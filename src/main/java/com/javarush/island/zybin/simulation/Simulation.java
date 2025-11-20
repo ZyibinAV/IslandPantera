@@ -1,6 +1,7 @@
 package com.javarush.island.zybin.simulation;
 
 
+import com.javarush.island.zybin.config.SimulationConfig;
 import com.javarush.island.zybin.entities.Animal;
 import com.javarush.island.zybin.entities.LivingEntity;
 import com.javarush.island.zybin.factory.EntityFactory;
@@ -33,16 +34,19 @@ public class Simulation {
     private final ExecutorService executorService;
     private final ScheduledExecutorService scheduledExecutorService;
 
+    private final SimulationConfig config;
+
     private volatile boolean isRunning = true;
 
-    public Simulation(Island island) {
-        this.island = island;
+    public Simulation(SimulationConfig config) {
+        this.config = config;
+        this.island = new Island(config.islandRows, config.islandCols);
         this.statisticsCollector = new StatisticsCollector(island);
         this.movementController = new MovementController(island);
-        this.feedingController = new FeedingController(island, statisticsCollector);
+        this.feedingController = new FeedingController(island, statisticsCollector, config.FEEDING_CHANCES);
         this.reproductionController = new ReproductionController(island, statisticsCollector,
-                movementController, feedingController);
-        this.factory = new EntityFactory(island, movementController, feedingController, reproductionController);
+                movementController, feedingController, config.grassGrowthPercent);
+        this.factory = new EntityFactory(island, movementController, feedingController, reproductionController, config);
 
         this.executorService = Executors.newFixedThreadPool(10);
         this.scheduledExecutorService = Executors.newScheduledThreadPool(1);
@@ -94,7 +98,7 @@ public class Simulation {
                 Cell cell = island.getCell(row, col);
                 for (LivingEntity entity : cell.getEntities()) {
                     if (entity instanceof Animal animal) {
-                        animal.reduceWeight();
+                        animal.reduceWeight(config.hungerLossPercent);
 
                     }
                 }

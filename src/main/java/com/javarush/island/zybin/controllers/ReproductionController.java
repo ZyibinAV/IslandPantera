@@ -21,14 +21,17 @@ public class ReproductionController {
     // --- Добавим поля для контроллеров ---
     private final MovementController movementController;
     private final FeedingController feedingController;
+    private final  double grassGrowthPercent;
 
     public ReproductionController(Island island, StatisticsCollector statisticsCollector,
                                   MovementController movementController,
-                                  FeedingController feedingController) {
+                                  FeedingController feedingController,
+                                  double grassGrowthPercent) {
         this.island = island;
         this.statisticsCollector = statisticsCollector;
         this.movementController = movementController;
         this.feedingController = feedingController;
+        this.grassGrowthPercent = grassGrowthPercent;
     }
     /**
      * Метод, вызываемый из Animal.reproduce().
@@ -110,7 +113,7 @@ public class ReproductionController {
 
         int currentGrassCount = grasses.size();
         int maxGrassCount = grasses.isEmpty() ? 200 : grasses.get(0).getMaxCountInCell();
-        double newGrassToAdd = (double) (currentGrassCount * 2);
+        int newGrassToAdd = (int) (currentGrassCount * grassGrowthPercent);
 
         if (currentGrassCount + newGrassToAdd <= maxGrassCount) {
             cell.getLock().lock();

@@ -1,5 +1,6 @@
 package com.javarush.island.zybin.factory;
 
+import com.javarush.island.zybin.config.SimulationConfig;
 import com.javarush.island.zybin.controllers.FeedingController;
 import com.javarush.island.zybin.controllers.MovementController;
 import com.javarush.island.zybin.controllers.ReproductionController;
@@ -31,7 +32,8 @@ public class EntityFactory {
     private final FeedingController feedingController;
     private final ReproductionController reproductionController;
 
-   private final Map<String, Integer> statistics = new HashMap<>(); // статистика по типу сущности
+    private final Map<String, Integer> statistics = new HashMap<>(); // статистика по типу сущности
+    private final SimulationConfig config;
 
     /**
      * Конструктор фабрики.
@@ -39,11 +41,14 @@ public class EntityFactory {
      * @param island Остров, на котором будут размещаться сущности.
      */
     public EntityFactory(Island island, MovementController movementController,
-                         FeedingController feedingController, ReproductionController reproductionController) {
+                         FeedingController feedingController,
+                         ReproductionController reproductionController,
+                         SimulationConfig config) {
         this.island = island;
         this.movementController = movementController;
         this.feedingController = feedingController;
         this.reproductionController = reproductionController;
+        this.config = config;
     }
 
     /**
@@ -80,9 +85,9 @@ public class EntityFactory {
      */
     private <T extends LivingEntity> int createAndDistribute(Class<T> clazz) {
         // создаем случайное количество сущностей для этого типа
-        int totalToCreate = random.nextInt(1000) + 100 ;
+        int totalToCreate = random.nextInt(1000) + 100;
         if (clazz == Grass.class) {
-            totalToCreate = island.getRows() * island.getCols() * 50;
+            totalToCreate = island.getRows() * island.getCols() * config.grassPerCellMultiplier;
         }
         AtomicInteger placedCount = new AtomicInteger(0);
         // Используем ExecutorService для многопоточного размещения
@@ -98,7 +103,7 @@ public class EntityFactory {
                         animal.setMovementController(movementController);
                         animal.setFeedingController(feedingController);
                         animal.setReproductionController(reproductionController);
-                    } else if (entity instanceof  Grass grass) {
+                    } else if (entity instanceof Grass grass) {
                         grass.setReproductionController(reproductionController);
                     }
                     // получаем тип сущности из поля type
@@ -119,9 +124,9 @@ public class EntityFactory {
                         // Неизвестный тип сущности — пропускаем
                         return;
                     }
-                   if (cell.tryAddEntity(entity, maxCount, (Class<? extends LivingEntity>) clazz)) {
-                       placedCount.incrementAndGet();
-                   }
+                    if (cell.tryAddEntity(entity, maxCount, (Class<? extends LivingEntity>) clazz)) {
+                        placedCount.incrementAndGet();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -141,9 +141,9 @@ public abstract class Animal implements LivingEntity {
 
 
     // --- Метод для уменьшения веса за ход (голод) ---
-    public void reduceWeight() {
+    public void reduceWeight(double lossPercent) {
         if (isAlive) {
-            double weightLoss = initialWeight * 0.02; // 10% от изначального веса
+            double weightLoss = initialWeight * lossPercent; // 10% от изначального веса
             weight -= weightLoss;
             if (weight <= 0) {
                 weight = 0;
