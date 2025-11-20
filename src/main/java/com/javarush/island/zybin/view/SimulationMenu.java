@@ -5,6 +5,33 @@ import com.javarush.island.zybin.simulation.Simulation;
 
 import java.util.Scanner;
 
+/**
+ * Provides a console-based user interface for configuring and controlling the simulation.
+ * <p>
+ * This class implements an interactive menu system that allows users to:
+ * - View current simulation settings
+ * - Configure various simulation parameters
+ * - Start the simulation with the chosen settings
+ *
+ * <p>Configuration options include:
+ * <ul>
+ *   <li>Island dimensions (rows x columns)</li>
+ *   <li>Hunger loss percentage per turn</li>
+ *   <li>Initial animal population</li>
+ *   <li>Grass growth and distribution parameters</li>
+ * </ul>
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Interactive console-based menu</li>
+ *   <li>Input validation with default values</li>
+ *   <li>Real-time configuration preview</li>
+ *   <li>Safe input handling</li>
+ * </ul>
+ *
+ * @see SimulationConfig
+ * @see Simulation
+ */
 public class SimulationMenu {
 
     private SimulationConfig config;
@@ -169,5 +196,4 @@ public class SimulationMenu {
             return defaultValue;
         }
     }
-
 }

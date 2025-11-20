@@ -20,12 +20,7 @@ public class Fox extends  Predator{
         setFoodTypes(Arrays.asList(Rabbit.class, Mouse.class, Duck.class, Caterpillar.class));
     }
 
-
-
-
-
     @Override
     public void reproduce() {
-
     }
 }

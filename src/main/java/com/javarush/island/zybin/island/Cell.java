@@ -6,15 +6,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * Класс, представляющий одну ячейку на острове.
- * Содержит список живых сущностей, находящихся в этой ячейке.
- */
 
+
+/**
+ * Represents a single cell on the island grid in the simulation.
+ * <p>
+ * This class is responsible for managing the living entities within a specific cell
+ * of the island. It provides thread-safe operations for adding, removing, and querying
+ * entities while maintaining data consistency through reentrant locks.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Thread-safe entity management using ReentrantLock</li>
+ *   <li>Support for concurrent access from multiple threads</li>
+ *   <li>Type-based entity counting and filtering</li>
+ *   <li>Bounded capacity control for entity population</li>
+ *   <li>Safe iteration over entities</li>
+ * </ul>
+ *
+ * @see LivingEntity
+ * @see java.util.concurrent.locks.ReentrantLock
+ */
 public class Cell {
-    private final List<LivingEntity> entities; // список живых сущностей в ячейке
-    private final int row;// номер строки ячейки на острове
-    private final int col; // номер столбца ячейки на острове
+    private final List<LivingEntity> entities;
+    private final int row;
+    private final int col;
     private  final ReentrantLock lock = new ReentrantLock();
 
     public Cell(int row, int col) {
@@ -35,24 +51,15 @@ public class Cell {
         return lock;
     }
 
-    /**
-     * Возвращает копию списка сущностей для безопасной итерации.
-     */
     public List<LivingEntity> getEntities() {
-         lock.lock();//Защита при возврате списка
+         lock.lock();
         try{
-          return  new ArrayList<>(entities); // Возвращаем копию
+          return  new ArrayList<>(entities);
         } finally {
             lock.unlock();
         }
     }
 
-    /**
-     * Добавляет сущность в ячейку, если количество не превышено.
-     * Проверка лимита происходит отдельно в симуляции или в методе добавления.
-     *
-     * @param entity Сущность для добавления.
-     */
     public void addEntity(LivingEntity entity) {
         lock.lock();
         try {
@@ -71,13 +78,6 @@ public class Cell {
         }
     }
 
-    /**
-     * Подсчитывает количество сущностей определённого типа (или его подтипов) в текущей ячейке.
-     * Использует стримы для фильтрации: оставляет только те сущности, тип которых соответствует clazz.
-     *
-     * @param clazz Класс сущности, количество которой нужно подсчитать (например, Grass.class).
-     * @return Количество сущностей этого типа в ячейке.
-     */
     public int getCountByType(Class<?> clazz) {
         lock.lock();
         try {
@@ -88,10 +88,7 @@ public class Cell {
             lock.unlock();
         }
     }
-    /**
-     * Атомарно проверяет лимит и добавляет сущность, если лимит не превышен.
-     * @return true, если добавление прошло успешно.
-     */
+
     public boolean tryAddEntity(LivingEntity entity, int maxCount, Class<? extends LivingEntity> clazz) {
         lock.lock();
         try {

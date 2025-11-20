@@ -17,12 +17,7 @@ public class Bison  extends Herbivore{
         setFoodTypes(Arrays.asList(Grass.class));
     }
 
-
-
-
-
     @Override
     public void reproduce() {
-
     }
 }

@@ -1,6 +1,5 @@
 package com.javarush.island.zybin.simulation;
 
-
 import com.javarush.island.zybin.config.SimulationConfig;
 import com.javarush.island.zybin.entities.Animal;
 import com.javarush.island.zybin.entities.LivingEntity;
@@ -13,15 +12,38 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-
-
 /**
- * Класс, управляющий симуляцией жизни на острове.
- * Запускает фазы: голод, еда, движение, размножение в детерминированном порядке.
- * Использует многопоточность для параллельного выполнения операций внутри фазы.
- * Завершает симуляцию, когда умирают все животные.
+ * The main simulation class that orchestrates the island ecosystem simulation.
+ * <p>
+ * This class manages the simulation lifecycle, including initialization, execution of simulation turns,
+ * and resource cleanup. It coordinates the interaction between different components such as
+ * movement, feeding, and reproduction of entities across the island.
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Manages the simulation loop with configurable turn timing</li>
+ *   <li>Coordinates parallel execution of entity behaviors</li>
+ *   <li>Handles simulation state and termination conditions</li>
+ *   <li>Manages thread pools for concurrent operations</li>
+ *   <li>Collects and reports simulation statistics</li>
+ * </ul>
+ *
+ * <p>The simulation proceeds in discrete turns, with each turn consisting of the following phases:
+ * <ol>
+ *   <li>Hunger application to all animals</li>
+ *   <li>Feeding phase (parallel execution)</li>
+ *   <li>Movement phase (parallel execution)</li>
+ *   <li>Reproduction phase (parallel execution)</li>
+ *   <li>Reset of food counters</li>
+ * </ol>
+ *
+ * @see Island
+ * @see EntityFactory
+ * @see MovementController
+ * @see FeedingController
+ * @see ReproductionController
+ * @see StatisticsCollector
  */
-
 public class Simulation {
 
     private final Island island;
@@ -33,9 +55,7 @@ public class Simulation {
 
     private final ExecutorService executorService;
     private final ScheduledExecutorService scheduledExecutorService;
-
     private final SimulationConfig config;
-
     private volatile boolean isRunning = true;
 
     public Simulation(SimulationConfig config) {
@@ -53,18 +73,15 @@ public class Simulation {
     }
 
     public void start() {
-        // Инициализация симуляции
         factory.populateIsland();
         System.out.println("Симуляция начата. Остров заполнен сущностями.");
         System.out.println("Начинаем цикл симуляции...\n");
 
-        // Запуск вывода статистики каждую секунду (например)
         scheduledExecutorService.scheduleAtFixedRate(
                 statisticsCollector::printStats,
                 0, 1, TimeUnit.SECONDS
         );
 
-        // Основной цикл симуляции
         while (isRunning) {
             runTurn();
             try {
@@ -73,26 +90,18 @@ public class Simulation {
                 Thread.currentThread().interrupt();
                 break;
             }
-            // Проверка окончания симуляции
             if (areAllAnimalsDead()) {
                 System.out.println("\nВсе животные умерли. Симуляция завершена.");
                 isRunning = false;
             }
         }
-        shutdown(); // проверить
+        shutdown();
     }
-    /**
-     * Выполняет один полный такт симуляции.
-     * Гарантирует детерминированный порядок фаз.
-     */
 
     private void runTurn() {
-        // Увеличиваем счётчик тактов
         statisticsCollector.incrementTurn();
-        // Сброс счётчиков статистики в начале такта
         statisticsCollector.resetCounters();
 
-        // 1. Животные уменьшают вес (голод)
         for (int row = 0; row < island.getRows(); row++) {
             for (int col = 0; col < island.getCols(); col++) {
                 Cell cell = island.getCell(row, col);
@@ -104,7 +113,6 @@ public class Simulation {
                 }
             }
         }
-        // 2. Животные едят (параллельно, но дожидаемся завершения)
         List<Future<?>> eatFutures = new ArrayList<>();
         for (int row = 0; row < island.getRows(); row++) {
             for (int col = 0; col < island.getCols(); col++) {
@@ -119,7 +127,6 @@ public class Simulation {
         }
         waitForFutures(eatFutures);
 
-        // 3. Животные перемещаются (параллельно, но дожидаемся завершения)
         List<Future<?>> moveFutures = new ArrayList<>();
         for (int row = 0; row < island.getRows(); row++) {
             for (int col = 0; col < island.getCols(); col++) {
@@ -134,7 +141,6 @@ public class Simulation {
         }
         waitForFutures(moveFutures);
 
-        // 4. Размножение (параллельно, но дожидаемся завершения)
         List<Future<?>> reproduceFutures = new ArrayList<>();
         for (int row = 0; row < island.getRows(); row++) {
             for (int col = 0; col < island.getCols(); col++) {
@@ -145,7 +151,6 @@ public class Simulation {
         }
         waitForFutures(reproduceFutures);
 
-        // 5. Сброс счётчиков насыщения (только после завершения фазы "есть")
         for (int row = 0; row < island.getRows(); row++) {
             for (int col = 0; col < island.getCols(); col++) {
                 Cell cell = island.getCell(row, col);
@@ -158,9 +163,7 @@ public class Simulation {
         }
 
     }
-    /**
-     * Дожидается завершения всех задач в списке.
-     */
+
     private void waitForFutures(List<Future<?>> futures) {
         for (Future<?> future : futures) {
             try {
@@ -176,7 +179,7 @@ public class Simulation {
                 Cell cell = island.getCell(row, col);
                 for (LivingEntity entity : cell.getEntities()) {
                     if (entity instanceof Animal animal && animal.isAlive()) {
-                        return false; // Найдено хотя бы одно живое животное
+                        return false;
                     }
                 }
             }

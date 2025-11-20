@@ -10,15 +10,33 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+
 /**
- * Класс, отвечающий за логику размножения животных и рост травы.
- * Использует многопоточный Random (ThreadLocalRandom).
+ * Controller responsible for managing reproduction mechanics in the island simulation.
+ * <p>
+ * Handles both animal reproduction and grass growth within individual cells while maintaining
+ * thread-safety and population limits. Works in conjunction with other controllers to ensure
+ * proper ecosystem balance.
+ *
+ * <p>Key responsibilities:
+ * <ul>
+ *   <li>Manages animal reproduction based on population density and conditions</li>
+ *   <li>Controls grass growth according to specified growth percentage</li>
+ *   <li>Ensures thread-safe operations during reproduction</li>
+ *   <li>Updates statistics for new organisms</li>
+ *   <li>Maintains maximum population limits per cell</li>
+ * </ul>
+ *
+ * @see Animal
+ * @see Grass
+ * @see Cell
+ * @see StatisticsCollector
+ * @see MovementController
+ * @see FeedingController
  */
 public class ReproductionController {
     private final Island island;
     private final StatisticsCollector statisticsCollector;
-
-    // --- Добавим поля для контроллеров ---
     private final MovementController movementController;
     private final FeedingController feedingController;
     private final  double grassGrowthPercent;
@@ -33,30 +51,14 @@ public class ReproductionController {
         this.feedingController = feedingController;
         this.grassGrowthPercent = grassGrowthPercent;
     }
-    /**
-     * Метод, вызываемый из Animal.reproduce().
-     * В текущей архитектуре не используется, т.к. размножение происходит по ячейкам.
-     */
-    public void reproduceAnimal(Animal animal) {
-        throw new UnsupportedOperationException("Reproduce для животных должен вызываться в контексте ячейки.");
-    }
 
-    /**
-     * Метод, вызываемый из Grass.reproduce().
-     * В текущей архитектуре не используется, т.к. размножение происходит по ячейкам.
-     */
     public void reproduceGrass(Grass grass) {
         throw new UnsupportedOperationException("Reproduce для травы должен вызываться в контексте ячейки.");
     }
 
 
-    /**
-     * Основной метод, вызываемый из симуляции для ячейки.
-     *
-     * @param cell Ячейка, в которой происходит размножение.
-     */
+
     public void reproduceInCell(Cell cell) {
-        // животные
         Map<String, List<Animal>> animalsByType = cell.getEntities().stream()
                 .filter(e -> e instanceof Animal && ((Animal) e).isAlive())
                 .map(e -> (Animal) e)
@@ -87,15 +89,13 @@ public class ReproductionController {
                     child.setMaxFood(parent.getMaxFood());
                     child.setFoodTypes(parent.getFoodTypes());
 
-                    // --- УСТАНОВКА КОНТРОЛЛЕРОВ ---
                     child.setMovementController(movementController);
                     child.setFeedingController(feedingController);
-
                     cell.getLock().lock();
                     try {
                         if (cell.getCountByType(clazz) < maxCount) {
                             cell.addEntity(child);
-                            statisticsCollector.incrementBorn(child.getType()); //статистика рожденных
+                            statisticsCollector.incrementBorn(child.getType());
                         }
                     } finally {
                         cell.getLock().unlock();
@@ -105,7 +105,6 @@ public class ReproductionController {
                 }
             }
         }
-        // Трава
         List<Grass> grasses = cell.getEntities().stream()
                 .filter(e -> e instanceof Grass && ((Grass) e).isAlive())
                 .map(e -> (Grass) e)
@@ -120,7 +119,7 @@ public class ReproductionController {
             try {
                 for (int i = 0; i < newGrassToAdd; i++) {
                     cell.addEntity(new Grass());
-                    statisticsCollector.incrementBorn("Grass"); // статистика выросшей травы
+                    statisticsCollector.incrementBorn("Grass");
                 }
             } finally {
                 cell.getLock().unlock();

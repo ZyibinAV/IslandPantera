@@ -10,9 +10,35 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
 /**
- * Класс для сбора и вывода статистики симуляции.
- * Потокобезопасен.
+ * Collects and manages statistical data about the island simulation.
+ * <p>
+ * This class is responsible for tracking various simulation metrics such as:
+ * - Current population of each entity type
+ * - Number of births, deaths, and feedings per turn
+ * - Turn counter
+ *
+ * <p>Key features:
+ * <ul>
+ *   <li>Thread-safe statistics collection using concurrent data structures</li>
+ *   <li>Real-time statistics tracking during simulation</li>
+ *   <li>Periodic statistics output</li>
+ *   <li>Support for dynamic entity types</li>
+ *   <li>Automatic counter reset between turns</li>
+ * </ul>
+ *
+ * <p>The collector maintains separate counters for:
+ * <ul>
+ *   <li>Entities born in the current turn</li>
+ *   <li>Entities that were eaten in the current turn</li>
+ *   <li>Entities that died of natural causes in the current turn</li>
+ * </ul>
+ *
+ * @see Island
+ * @see LivingEntity
+ * @see java.util.concurrent.ConcurrentHashMap
+ * @see java.util.concurrent.atomic.AtomicInteger
  */
 public class StatisticsCollector {
 
@@ -43,7 +69,6 @@ public class StatisticsCollector {
     public void incrementDied(String type) {
         diedThisTurn.computeIfAbsent(type, k-> new AtomicInteger(0)).incrementAndGet();
     }
-    // счетчик тактов
     public void incrementTurn() {
         currentTurn.incrementAndGet();
     }
@@ -89,6 +114,4 @@ public class StatisticsCollector {
         }
         return  "Unknown";
     }
-
-
 }

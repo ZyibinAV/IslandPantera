@@ -17,12 +17,7 @@ public class Boar extends Herbivore{
         setFoodTypes(Arrays.asList(Mouse.class, Caterpillar.class, Grass.class));
     }
 
-
-
-
-
     @Override
     public void reproduce() {
-
     }
 }

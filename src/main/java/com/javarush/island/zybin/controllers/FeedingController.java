@@ -10,17 +10,31 @@ import com.javarush.island.zybin.simulation.StatisticsCollector;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
-/**
- * Класс, отвечающий за логику питания животных.
- * Использует многопоточный Random (ThreadLocalRandom).
- */
 
+
+/**
+ * Controller responsible for managing the feeding mechanics in the island simulation.
+ * <p>
+ * This class handles the feeding behavior of animals, including predator-prey interactions
+ * and plant consumption. It ensures thread-safe operations when modifying cell contents.
+ *
+ * <p>Key responsibilities include:
+ * <ul>
+ *   <li>Managing feeding attempts between animals</li>
+ *   <li>Handling grass consumption by herbivores</li>
+ *   <li>Updating statistics for tracking purposes</li>
+ *   <li>Ensuring thread safety during concurrent access</li>
+ * </ul>
+ *
+ * @see Animal
+ * @see Cell
+ * @see StatisticsCollector
+ * @see Island
+ */
 public class FeedingController {
     private final Island island;
     private final StatisticsCollector statisticsCollector;
     private final Map<String, Map<String, Integer>> FEEDING_CHANCES;
-
-
 
     public FeedingController(Island island, StatisticsCollector statisticsCollector,
                              Map<String, Map<String, Integer>> feedingChances) {
@@ -29,12 +43,6 @@ public class FeedingController {
         this.FEEDING_CHANCES = feedingChances;
     }
 
-    /**
-     * Метод, который пытается покормить животное в текущей ячейке.
-     *
-     * @param animal      Животное, которое ест.
-     * @param currentCell Ячейка, в которой животное находится.
-     */
     public void feedAnimal(Animal animal, Cell currentCell) {
         if (!animal.isAlive() || animal.isFull()) {
             return;
@@ -42,21 +50,18 @@ public class FeedingController {
         String animalType = animal.getType();
         Map<String, Integer> chances = FEEDING_CHANCES.get(animalType);
         if (chances == null) {
-            return; // Нет данных о том, чем питается это животное
+            return;
         }
 
-        // Ищем подходящую еду в ячейке
         for (LivingEntity food : currentCell.getEntities()) {
             String foodType = getEntityType(food);
 
             Integer chance = chances.get(foodType);
             if (chance == null) {
-                continue; //Это животное не ест эту еду
+                continue;
             }
-            // Проверяем шанс
             int roll = ThreadLocalRandom.current().nextInt(0, 101);
             if (roll <= chance) {
-                // Животное съедает еду
                 currentCell.getLock().lock();
                 try {
                     if (currentCell.getEntities().contains(food)) {
@@ -64,13 +69,13 @@ public class FeedingController {
                             Animal prey = (Animal) food;
                             if(prey.isAlive()){
                                 prey.setAlive(false);
-                                statisticsCollector.incrementDied(prey.getType()); // Статистика умерших
-                                statisticsCollector.incrementEaten(prey.getType()); // Статистика съеденных
+                                statisticsCollector.incrementDied(prey.getType());
+                                statisticsCollector.incrementEaten(prey.getType());
                             }
                         } else if (food instanceof Grass) {
                             Grass grass = (Grass) food;
                             if (grass.isAlive()) {
-                                grass.setAlive(false); // Трава "умирает"
+                                grass.setAlive(false);
                             }
                         }
                         currentCell.removeEntity(food);
@@ -80,9 +85,9 @@ public class FeedingController {
                         } else if (food instanceof Grass) {
                             foodWeight = ((Grass) food).getWeight();
                         }
-                        animal.gainWeight(foodWeight); // Прибавляем вес
+                        animal.gainWeight(foodWeight);
                         if (animal.isFull()) {
-                            break; // живтное наелось
+                            break;
                         }
                     }
                 } finally {
@@ -92,9 +97,6 @@ public class FeedingController {
         }
     }
 
-    /**
-     * Вспомогательный метод для получения типа сущности.
-     */
     private String getEntityType(LivingEntity entity) {
         if (entity instanceof Animal) {
             return ((Animal) entity).getType();

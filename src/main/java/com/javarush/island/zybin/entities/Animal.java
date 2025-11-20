@@ -1,9 +1,6 @@
 package com.javarush.island.zybin.entities;
 
-/**
- * Абстрактный класс для всех животных.
- * Содержит общие свойства и методы для хищников и травоядных.
- */
+
 
 import com.javarush.island.zybin.island.Cell;
 import com.javarush.island.zybin.controllers.FeedingController;
@@ -15,18 +12,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class Animal implements LivingEntity {
 
-    private String type; // тип животного (например, "Волк", "Заяц")
-    private double weight; // вес животного
-    private double initialWeight; // изначальный вес (для расчётов)
-    private int maxCountInCell; // максимальное количество животных в ячейке
-    private int speed;// скорость передвижения (количество ячеек)
-    private double maxFood; // количество еды для насыщения
-    private List<Class<? extends LivingEntity>> foodTypes; // типы еды, которую может есть животное
-    private boolean isAlive; // статус животного
+    private String type;
+    private double weight;
+    private double initialWeight;
+    private int maxCountInCell;
+    private int speed;
+    private double maxFood;
+    private List<Class<? extends LivingEntity>> foodTypes;
+    private boolean isAlive;
 
-    // --- Обновляем на AtomicInteger ---
     private final AtomicInteger currentFoodCount = new AtomicInteger(0);
-    // добавим контроллеры
     private MovementController movementController;
     private FeedingController feedingController;
     private ReproductionController reproductionController;
@@ -101,8 +96,6 @@ public abstract class Animal implements LivingEntity {
         isAlive = alive;
     }
 
-
-    // Устанавливаем контроллер извне (например, в симуляции)
     public void setMovementController(MovementController controller) {
         this.movementController = controller;
     }
@@ -115,7 +108,6 @@ public abstract class Animal implements LivingEntity {
         this.reproductionController = controller;
     }
 
-    // Метод, который будет вызываться симуляцией
     public void move(Cell currentCell) {
         if (movementController == null) {
             throw new IllegalStateException("MovementController не установлен. Сначала вызовите setMovementController.");
@@ -137,13 +129,9 @@ public abstract class Animal implements LivingEntity {
         }
     }
 
-
-
-
-    // --- Метод для уменьшения веса за ход (голод) ---
     public void reduceWeight(double lossPercent) {
         if (isAlive) {
-            double weightLoss = initialWeight * lossPercent; // 10% от изначального веса
+            double weightLoss = initialWeight * lossPercent;
             weight -= weightLoss;
             if (weight <= 0) {
                 weight = 0;
@@ -152,14 +140,13 @@ public abstract class Animal implements LivingEntity {
         }
     }
 
-    // --- Метод для добавления веса при поедании ---
     public void gainWeight(double foodWeight) {
         if (isAlive) {
             weight += foodWeight;
             if (weight > initialWeight) {
-                weight = initialWeight;// вес не может превышать изначальный
+                weight = initialWeight;
             }
-            currentFoodCount.incrementAndGet(); // потокобезопасное увеличение
+            currentFoodCount.incrementAndGet();
         }
     }
 
@@ -168,7 +155,7 @@ public abstract class Animal implements LivingEntity {
     }
 
     public void resetFoodCount() {
-        currentFoodCount.set(0); // потокобезопасный сброс
+        currentFoodCount.set(0);
     }
 
 }

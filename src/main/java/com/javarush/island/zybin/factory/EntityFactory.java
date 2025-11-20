@@ -19,12 +19,29 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Класс-фабрика для создания и распределения сущностей по острову.
- * Использует паттерн "Фабрика" и многопоточную рандомизацию.
- * Учитывает поле maxCountInCell у каждой сущности.
- */
 
+
+/**
+ * Factory class responsible for creating and distributing entities across the island.
+ * <p>
+ * This class implements the Factory pattern to create various types of living entities
+ * (animals and plants) and distributes them randomly across the island's cells.
+ * It handles concurrent entity creation using a thread pool for better performance.
+ *
+ * <p>Key responsibilities:
+ * <ul>
+ *   <li>Creating instances of different entity types</li>
+ *   <li>Distributing entities randomly across the island</li>
+ *   <li>Managing thread-safe entity creation and placement</li>
+ *   <li>Tracking and reporting statistics about created entities</li>
+ *   <li>Respecting maximum population limits per cell</li>
+ * </ul>
+ *
+ * @see LivingEntity
+ * @see Animal
+ * @see Grass
+ * @see Island
+ */
 public class EntityFactory {
     private final Island island;
     private final Random random = new Random();
@@ -32,14 +49,9 @@ public class EntityFactory {
     private final FeedingController feedingController;
     private final ReproductionController reproductionController;
 
-    private final Map<String, Integer> statistics = new HashMap<>(); // статистика по типу сущности
+    private final Map<String, Integer> statistics = new HashMap<>();
     private final SimulationConfig config;
 
-    /**
-     * Конструктор фабрики.
-     *
-     * @param island Остров, на котором будут размещаться сущности.
-     */
     public EntityFactory(Island island, MovementController movementController,
                          FeedingController feedingController,
                          ReproductionController reproductionController,
@@ -51,53 +63,33 @@ public class EntityFactory {
         this.config = config;
     }
 
-    /**
-     * Метод для запуска процесса создания и распределения сущностей по острову.
-     * Создаёт и размещает животных и растения (траву) в случайных ячейках.
-     */
     public void populateIsland() {
         List<Class<? extends LivingEntity>> entityTypes = Arrays.asList(Bison.class,
                 Boar.class, Caterpillar.class, Deer.class, Duck.class, Goat.class,
                 Horse.class, Mouse.class, Rabbit.class, Sheep.class, Bear.class,
                 Eagle.class, Fox.class, Python.class, Wolf.class, Grass.class);
-        // Запускаем создание животных
         for (Class<? extends LivingEntity> entityType : entityTypes) {
             int created = createAndDistribute(entityType);
             String typeName = getSimpleTypeName(entityType);
             statistics.put(typeName, created);
         }
-
         int grassCount = createAndDistribute(Grass.class);
         statistics.put("Grass", grassCount);
-
-        // --- Вызовем вывод статистики ---
         printStatistics();
-        // --- /Вызовем ---
-
     }
 
-    /**
-     * Метод, который создаёт сущности и распределяет их по ячейкам острова.
-     * Использует многопоточную рандомизацию.
-     *
-     * @param clazz Класс сущности (например, Wolf.class).
-     * @return Количество успешно созданных и размещенных сущностей.
-     */
     private <T extends LivingEntity> int createAndDistribute(Class<T> clazz) {
-        // создаем случайное количество сущностей для этого типа
         int totalToCreate = random.nextInt(1000) + 100;
         if (clazz == Grass.class) {
             totalToCreate = island.getRows() * island.getCols() * config.grassPerCellMultiplier;
         }
         AtomicInteger placedCount = new AtomicInteger(0);
-        // Используем ExecutorService для многопоточного размещения
-        ExecutorService executor = Executors.newFixedThreadPool(10);// 10 потоков
+        ExecutorService executor = Executors.newFixedThreadPool(10);
         List<Future<?>> futures = new ArrayList<>();
 
         for (int i = 0; i < totalToCreate; i++) {
             Future<?> future = executor.submit(() -> {
                 try {
-                    // создаем обьект сущности
                     T entity = clazz.getDeclaredConstructor().newInstance();
                     if (entity instanceof Animal animal) {
                         animal.setMovementController(movementController);
@@ -106,13 +98,10 @@ public class EntityFactory {
                     } else if (entity instanceof Grass grass) {
                         grass.setReproductionController(reproductionController);
                     }
-                    // получаем тип сущности из поля type
                     String entityType = getEntityType(entity);
-                    // выбираем случайную ячейку на острове
                     int row = random.nextInt(island.getRows());
                     int col = random.nextInt(island.getCols());
                     Cell cell = island.getCell(row, col);
-                    // Проверяем, не превышено ли максимальное количество сущностей в ячейке
                     int maxCount = -1;
                     if (entity instanceof Animal) {
                         maxCount = ((Animal) entity).getMaxCountInCell();
@@ -121,7 +110,6 @@ public class EntityFactory {
                     }
 
                     if (maxCount == -1) {
-                        // Неизвестный тип сущности — пропускаем
                         return;
                     }
                     if (cell.tryAddEntity(entity, maxCount, (Class<? extends LivingEntity>) clazz)) {
@@ -133,7 +121,6 @@ public class EntityFactory {
             });
             futures.add(future);
         }
-        // ждем завершения всех задач
         for (Future<?> future : futures) {
             try {
                 future.get();
@@ -142,15 +129,9 @@ public class EntityFactory {
             }
         }
         executor.shutdown();
-        return placedCount.get(); // возвращаем количество успешно размещенных сущностей
+        return placedCount.get();
     }
 
-    /**
-     * Вспомогательный метод для получения типа сущности из поля type.
-     *
-     * @param entity Экземпляр сущности.
-     * @return Значение поля type.
-     */
     private String getEntityType(LivingEntity entity) {
         if (entity instanceof Animal) {
             return ((Animal) entity).getType();
@@ -160,16 +141,11 @@ public class EntityFactory {
         return "Unknown";
     }
 
-    /**
-     * Возвращает простое имя класса (например, "Wolf", "Grass").
-     */
     private String getSimpleTypeName(Class<? extends LivingEntity> clazz) {
         return clazz.getSimpleName();
     }
 
-    /**
-     * Выводит статистику по размещенным сущностям в консоль.
-     */
+
     private void printStatistics() {
         System.out.println("\n Статистика размещённых сущностей:");
         System.out.println("=====================================");

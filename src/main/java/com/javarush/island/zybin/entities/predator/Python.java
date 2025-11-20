@@ -19,12 +19,7 @@ public class Python extends  Predator {
         setFoodTypes(Arrays.asList(Fox.class, Rabbit.class, Mouse.class, Duck.class));
     }
 
-
-
-
-
     @Override
     public void reproduce() {
-
     }
 }

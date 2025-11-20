@@ -3,24 +3,37 @@ package com.javarush.island.zybin.config;
 import java.util.Map;
 
 /**
- * Класс, содержащий все настраиваемые параметры симуляции.
- * Позволяет легко изменять поведение симуляции без изменения основного кода.
+ * Configuration class for the island simulation.
+ * <p>
+ * This class holds all the configuration parameters required to run the island simulation,
+ * including island dimensions, hunger mechanics, initial animal population, and feeding behaviors.
+ * It provides a default configuration through the {@link #getDefaultConfig()} method.
+ *
+ * <p>Key configuration parameters include:
+ * <ul>
+ *   <li>Island dimensions (rows and columns)</li>
+ *   <li>Hunger mechanics (percentage of hunger loss per turn)</li>
+ *   <li>Initial animal population</li>
+ *   <li>Grass growth and distribution parameters</li>
+ *   <li>Feeding chances between different animal species</li>
+ * </ul>
+ *
+ * <p>The feeding chances are represented as a nested map where the outer map's key is the predator
+ * and the inner map contains the prey species with their respective success percentages.
+ *
+ * @see #getDefaultConfig()
  */
 public class SimulationConfig {
 
-    // --- Размеры острова ---
     public final int islandRows;
     public final int islandCols;
 
-    // --- Параметры животных ---
-    public final double hungerLossPercent; // Сколько % веса теряется за такт
-    public final int initialAnimalAmount; // Базовое количество животных при расселении
+    public final double hungerLossPercent;
+    public final int initialAnimalAmount;
 
-    // --- Параметры травы ---
-    public final int grassPerCellMultiplier; // Сколько травы создать на каждую ячейку при расселении
-    public final double grassGrowthPercent; // На сколько % растёт трава каждый такт
+    public final int grassPerCellMultiplier;
+    public final double grassGrowthPercent;
 
-    // --- Таблица шансов поедания ---
     public final Map<String, Map<String, Integer>> FEEDING_CHANCES;
 
 
@@ -37,10 +50,8 @@ public class SimulationConfig {
         this.FEEDING_CHANCES = feedingChances;
     }
 
-    // --- Статический метод для получения конфига по умолчанию ---
     public static SimulationConfig getDefaultConfig() {
         Map<String, Map<String, Integer>> feedingChances = Map.ofEntries(
-                // --- Таблица шансов как раньше ---
                 Map.entry("Wolf", Map.ofEntries(
                         Map.entry("Horse", 10),
                         Map.entry("Deer", 15),
@@ -104,12 +115,12 @@ public class SimulationConfig {
                 Map.entry("Caterpillar", Map.of("Grass", 100))
         );
         return new SimulationConfig(
-                120, // islandRows
-                20,  // islandCols
-                0.02, // hungerLossPercent (2%)
-                1000, // initialAnimalAmount (рандом от этого + 10000)
-                50,   // grassPerCellMultiplier
-                0.10, // grassGrowthPercent (10%)
+                120,
+                20,
+                0.02,
+                1000,
+                50,
+                0.10,
                 feedingChances
         );
     }

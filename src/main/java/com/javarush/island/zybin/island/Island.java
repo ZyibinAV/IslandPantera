@@ -1,25 +1,35 @@
 package com.javarush.island.zybin.island;
 
+
+
 /**
- * Класс, представляющий остров — двумерную сетку ячеек.
- * Размер острова можно задать при создании и в будущем расширить.
+ * Represents the island in the simulation as a two-dimensional grid of cells.
+ * <p>
+ * This class serves as the main container for the simulation's environment,
+ * providing access to individual cells and managing the spatial organization
+ * of living entities. The island is initialized with a fixed number of rows
+ * and columns, each containing a Cell instance.
+ *
+ * <p>Key responsibilities:
+ * <ul>
+ *   <li>Managing the grid of cells that make up the island</li>
+ *   <li>Providing access to cells by coordinates</li>
+ *   <li>Validating coordinates to ensure they are within island boundaries</li>
+ *   <li>Maintaining the spatial structure of the simulation</li>
+ * </ul>
+ *
+ * @see Cell
+ * @see com.javarush.island.zybin.entities.LivingEntity
  */
-
 public class Island {
-    private Cell[][] grid; //двухмерный массив ячеек типа Cell
-    private int rows;// количество строк в острове
-    private int cols;// количество столбцов в острове
+    private Cell[][] grid;
+    private int rows;
+    private int cols;
 
-    /**
-     * Конструктор острова с заданными размерами.
-     * @param rows Количество строк (например, 5).
-     * @param cols Количество столбцов (например, 5).
-     */
     public Island(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;
         this.grid = new Cell[rows][cols];
-        // инициализация всех ячеек
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 grid[i][j] = new Cell(i,j);
@@ -39,15 +49,9 @@ public class Island {
         if (isValidCoordinates(row, col)) {
             return grid[row][col];
         }
-        return  null;// возвращаем null если координаты вне диапазона
+        return  null;
     }
 
-    /**
-     * Проверяет, находятся ли координаты внутри границ острова.
-     * @param row Номер строки.
-     * @param col Номер столбца.
-     * @return true, если координаты корректны.
-     */
     private boolean isValidCoordinates(int row, int col) {
         return row >= 0 && row < rows && col >= 0 && col < cols;
     }

@@ -18,12 +18,7 @@ public class Bear extends  Predator {
                 Goat.class, Sheep.class, Boar.class, Bison.class, Duck.class));
     }
 
-
-
-
-
     @Override
     public void reproduce() {
-
     }
 }

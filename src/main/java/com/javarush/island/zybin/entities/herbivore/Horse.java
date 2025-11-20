@@ -16,13 +16,8 @@ public class Horse extends Herbivore {
         setFoodTypes(Arrays.asList(Grass.class));
     }
 
-
-
-
-
     @Override
     public void reproduce() {
-
     }
 }
 
