@@ -80,7 +80,10 @@ public class EntityFactory {
      */
     private <T extends LivingEntity> int createAndDistribute(Class<T> clazz) {
         // создаем случайное количество сущностей для этого типа
-        int totalToCreate = random.nextInt(1000) + 50;
+        int totalToCreate = random.nextInt(10000) + 1000 ;
+        if (clazz == Grass.class) {
+            totalToCreate = island.getRows() * island.getCols() * 150;
+        }
         AtomicInteger placedCount = new AtomicInteger(0);
         // Используем ExecutorService для многопоточного размещения
         ExecutorService executor = Executors.newFixedThreadPool(10);// 10 потоков
