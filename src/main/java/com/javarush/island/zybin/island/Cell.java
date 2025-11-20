@@ -4,6 +4,7 @@ import com.javarush.island.zybin.entities.LivingEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Класс, представляющий одну ячейку на острове.
@@ -14,6 +15,7 @@ public class Cell {
     private final List<LivingEntity> entities; // список живых сущностей в ячейке
     private final int row;// номер строки ячейки на острове
     private final int col; // номер столбца ячейки на острове
+    private  final ReentrantLock lock = new ReentrantLock();
 
     public Cell(int row, int col) {
         this.entities = new ArrayList<>();
@@ -32,9 +34,14 @@ public class Cell {
      * Возвращает копию списка сущностей для безопасной итерации.
      */
     public List<LivingEntity> getEntities() {
-        synchronized (entities) { //Защита при возврате списка
-            return new ArrayList<>(entities); // Возвращаем копию
+         lock.lock();//Защита при возврате списка
+        try{
+          return  new ArrayList<>(entities); // Возвращаем копию
+        } finally {
+            lock.unlock();
         }
+
+
     }
 
     /**
@@ -44,14 +51,20 @@ public class Cell {
      * @param entity Сущность для добавления.
      */
     public void addEntity(LivingEntity entity) {
-        synchronized (entities) {
+        lock.lock();
+        try {
             entities.add(entity);
+        } finally {
+            lock.unlock();
         }
     }
 
     public void removeEntity(LivingEntity entity) {
-        synchronized (entities) {
+        lock.lock();
+        try {
             entities.remove(entity);
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -63,10 +76,13 @@ public class Cell {
      * @return Количество сущностей этого типа в ячейке.
      */
     public int getCountByType(Class<?> clazz) {
-        synchronized (entities) {
+        lock.lock();
+        try {
             return (int) entities.stream()
                     .filter(e -> clazz.isAssignableFrom(e.getClass()))
                     .count();
+        } finally {
+            lock.unlock();
         }
     }
     /**
@@ -74,7 +90,8 @@ public class Cell {
      * @return true, если добавление прошло успешно.
      */
     public boolean tryAddEntity(LivingEntity entity, int maxCount, Class<? extends LivingEntity> clazz) {
-        synchronized (entities) {
+        lock.lock();
+        try {
             int currentCount = (int) entities.stream()
                     .filter(e -> clazz.isAssignableFrom(e.getClass()))
                     .count();
@@ -83,6 +100,8 @@ public class Cell {
                 return true;
             }
             return false;
+        } finally {
+            lock.unlock();
         }
     }
 
