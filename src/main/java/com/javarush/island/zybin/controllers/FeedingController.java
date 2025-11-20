@@ -118,7 +118,8 @@ public class FeedingController {
             int roll = ThreadLocalRandom.current().nextInt(0, 101);
             if (roll <= chance) {
                 // Животное съедает еду
-                synchronized (currentCell) {
+                currentCell.getLock().lock();
+                try {
                     if (currentCell.getEntities().contains(food)) {
                         if (food instanceof Animal) {
                             Animal prey = (Animal) food;
@@ -145,6 +146,8 @@ public class FeedingController {
                             break; // живтное наелось
                         }
                     }
+                } finally {
+                    currentCell.getLock().unlock();
                 }
             }
         }

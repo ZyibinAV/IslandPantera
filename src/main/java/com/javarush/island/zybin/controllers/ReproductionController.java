@@ -21,7 +21,6 @@ public class ReproductionController {
     // --- Добавим поля для контроллеров ---
     private final MovementController movementController;
     private final FeedingController feedingController;
-   // private  ReproductionController selfReference;
 
     public ReproductionController(Island island, StatisticsCollector statisticsCollector,
                                   MovementController movementController,
@@ -88,13 +87,15 @@ public class ReproductionController {
                     // --- УСТАНОВКА КОНТРОЛЛЕРОВ ---
                     child.setMovementController(movementController);
                     child.setFeedingController(feedingController);
-                   // child.setReproductionController(this.selfReference);
 
-                    synchronized (cell) {
+                    cell.getLock().lock();
+                    try {
                         if (cell.getCountByType(clazz) < maxCount) {
                             cell.addEntity(child);
                             statisticsCollector.incrementBorn(child.getType()); //статистика рожденных
                         }
+                    } finally {
+                        cell.getLock().unlock();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -112,11 +113,14 @@ public class ReproductionController {
         double newGrassToAdd = (double) (currentGrassCount * 2);
 
         if (currentGrassCount + newGrassToAdd <= maxGrassCount) {
-            synchronized (cell) {
+            cell.getLock().lock();
+            try {
                 for (int i = 0; i < newGrassToAdd; i++) {
                     cell.addEntity(new Grass());
                     statisticsCollector.incrementBorn("Grass"); // статистика выросшей травы
                 }
+            } finally {
+                cell.getLock().unlock();
             }
         }
     }

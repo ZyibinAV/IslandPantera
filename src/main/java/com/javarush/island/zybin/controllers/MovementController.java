@@ -5,6 +5,7 @@ import com.javarush.island.zybin.island.Cell;
 import com.javarush.island.zybin.island.Island;
 
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Класс, отвечающий за логику передвижения животных по острову.
@@ -54,22 +55,28 @@ public class MovementController {
         if (targetCell.getCountByType(animal.getClass()) >= animal.getMaxCountInCell()) {
             return;
         }
-        // --- ИСПРАВЛЕНИЕ: захват мониторов в фиксированном порядке ---
-        Cell firstLock = currentCell;
-        Cell secondLock = targetCell;
+        Lock firstLock = currentCell.getLock();
+        Lock secondLock = targetCell.getLock();
+
         if (System.identityHashCode(currentCell) > System.identityHashCode(targetCell)) {
-            firstLock = targetCell;
-            secondLock = currentCell;
+            firstLock = targetCell.getLock();
+            secondLock = currentCell.getLock();
         }
-           synchronized (firstLock) {
-            synchronized (secondLock) {
-                // Проверяем снова, т.к. состояние могло измениться
+
+        firstLock.lock();
+        try {
+            secondLock.lock();
+            try {
                 if (currentCell.getEntities().contains(animal) &&
-                    targetCell.getCountByType(animal.getClass()) < animal.getMaxCountInCell()) {
+                        targetCell.getCountByType(animal.getClass()) < animal.getMaxCountInCell()) {
                     currentCell.removeEntity(animal);
                     targetCell.addEntity(animal);
                 }
+            } finally {
+                secondLock.unlock();
             }
+        } finally {
+            firstLock.unlock();
         }
     }
 }

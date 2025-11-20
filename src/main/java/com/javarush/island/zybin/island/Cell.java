@@ -30,6 +30,11 @@ public class Cell {
     public int getCol() {
         return col;
     }
+
+    public ReentrantLock getLock() {
+        return lock;
+    }
+
     /**
      * Возвращает копию списка сущностей для безопасной итерации.
      */
@@ -40,8 +45,6 @@ public class Cell {
         } finally {
             lock.unlock();
         }
-
-
     }
 
     /**
