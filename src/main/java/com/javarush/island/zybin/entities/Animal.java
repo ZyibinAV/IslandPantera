@@ -1,11 +1,10 @@
 package com.javarush.island.zybin.entities;
 
 
-
-import com.javarush.island.zybin.island.Cell;
 import com.javarush.island.zybin.controllers.FeedingController;
 import com.javarush.island.zybin.controllers.MovementController;
 import com.javarush.island.zybin.controllers.ReproductionController;
+import com.javarush.island.zybin.island.Cell;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -110,14 +109,14 @@ public abstract class Animal implements LivingEntity {
 
     public void move(Cell currentCell) {
         if (movementController == null) {
-            throw new IllegalStateException("MovementController не установлен. Сначала вызовите setMovementController.");
+            throw new IllegalStateException("MovementController is not installed. First call setMovementController.");
         }
         movementController.moveAnimal(this, currentCell);
     }
 
     public void eat(Cell currentCell) {
         if (feedingController == null) {
-            throw new IllegalStateException("FeedingController не установлен. Сначала вызовите setFeedingController.");
+            throw new IllegalStateException("FeedingController is not installed. First call setFeedingController.");
         }
         feedingController.feedAnimal(this, currentCell);
     }
@@ -125,7 +124,7 @@ public abstract class Animal implements LivingEntity {
     @Override
     public void reproduce() {
         if (reproductionController == null) {
-            throw new IllegalStateException("ReproductionController не установлен.");
+            throw new IllegalStateException("ReproductionController is not installed.");
         }
     }
 

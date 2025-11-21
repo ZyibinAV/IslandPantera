@@ -4,7 +4,7 @@ import com.javarush.island.zybin.entities.plants.Grass;
 
 import java.util.Arrays;
 
-public class Mouse extends Herbivore{
+public class Mouse extends Herbivore {
 
     public Mouse() {
         super();

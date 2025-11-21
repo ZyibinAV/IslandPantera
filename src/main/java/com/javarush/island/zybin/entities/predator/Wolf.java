@@ -4,7 +4,7 @@ import com.javarush.island.zybin.entities.herbivore.*;
 
 import java.util.Arrays;
 
-public class Wolf extends Predator{
+public class Wolf extends Predator {
 
     public Wolf() {
         super();

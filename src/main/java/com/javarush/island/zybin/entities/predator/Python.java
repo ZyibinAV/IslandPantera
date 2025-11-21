@@ -6,7 +6,7 @@ import com.javarush.island.zybin.entities.herbivore.Rabbit;
 
 import java.util.Arrays;
 
-public class Python extends  Predator {
+public class Python extends Predator {
 
     public Python() {
         super();

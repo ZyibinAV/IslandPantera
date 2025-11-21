@@ -7,10 +7,10 @@ import com.javarush.island.zybin.controllers.ReproductionController;
 import com.javarush.island.zybin.entities.Animal;
 import com.javarush.island.zybin.entities.LivingEntity;
 import com.javarush.island.zybin.entities.herbivore.*;
-import com.javarush.island.zybin.island.Cell;
-import com.javarush.island.zybin.island.Island;
 import com.javarush.island.zybin.entities.plants.Grass;
 import com.javarush.island.zybin.entities.predator.*;
+import com.javarush.island.zybin.island.Cell;
+import com.javarush.island.zybin.island.Island;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -18,7 +18,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
-
 
 
 /**
@@ -147,7 +146,7 @@ public class EntityFactory {
 
 
     private void printStatistics() {
-        System.out.println("\n Статистика размещённых сущностей:");
+        System.out.println("\n Statistics of placed entities:");
         System.out.println("=====================================");
         for (Map.Entry<String, Integer> entry : statistics.entrySet()) {
             System.out.printf("%-15s: %d%n", entry.getKey(), entry.getValue());

@@ -1,7 +1,6 @@
 package com.javarush.island.zybin.island;
 
 
-
 /**
  * Represents the island in the simulation as a two-dimensional grid of cells.
  * <p>
@@ -32,7 +31,7 @@ public class Island {
         this.grid = new Cell[rows][cols];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                grid[i][j] = new Cell(i,j);
+                grid[i][j] = new Cell(i, j);
             }
         }
     }
@@ -49,16 +48,13 @@ public class Island {
         if (isValidCoordinates(row, col)) {
             return grid[row][col];
         }
-        return  null;
+        return null;
     }
 
     private boolean isValidCoordinates(int row, int col) {
         return row >= 0 && row < rows && col >= 0 && col < cols;
     }
 
-    public Cell[][] getGrid() {
-        return grid;
-    }
 
     @Override
     public String toString() {

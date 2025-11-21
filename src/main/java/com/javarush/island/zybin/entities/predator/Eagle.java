@@ -6,7 +6,7 @@ import com.javarush.island.zybin.entities.herbivore.Rabbit;
 
 import java.util.Arrays;
 
-public class Eagle extends  Predator {
+public class Eagle extends Predator {
 
     public Eagle() {
         super();

@@ -1,12 +1,14 @@
 package com.javarush.island.zybin.simulation;
 
 import com.javarush.island.zybin.config.SimulationConfig;
+import com.javarush.island.zybin.controllers.FeedingController;
+import com.javarush.island.zybin.controllers.MovementController;
+import com.javarush.island.zybin.controllers.ReproductionController;
 import com.javarush.island.zybin.entities.Animal;
 import com.javarush.island.zybin.entities.LivingEntity;
 import com.javarush.island.zybin.factory.EntityFactory;
 import com.javarush.island.zybin.island.Cell;
 import com.javarush.island.zybin.island.Island;
-import com.javarush.island.zybin.controllers.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +52,7 @@ public class Simulation {
     private EntityFactory factory;
     private final MovementController movementController;
     private final FeedingController feedingController;
-    private  ReproductionController reproductionController;
+    private ReproductionController reproductionController;
     private final StatisticsCollector statisticsCollector;
 
     private final ExecutorService executorService;
@@ -74,8 +76,8 @@ public class Simulation {
 
     public void start() {
         factory.populateIsland();
-        System.out.println("Симуляция начата. Остров заполнен сущностями.");
-        System.out.println("Начинаем цикл симуляции...\n");
+        System.out.println("The simulation has started. The island is filled with entities.");
+        System.out.println("Let's start the simulation cycle...\n");
 
         scheduledExecutorService.scheduleAtFixedRate(
                 statisticsCollector::printStats,
@@ -91,7 +93,7 @@ public class Simulation {
                 break;
             }
             if (areAllAnimalsDead()) {
-                System.out.println("\nВсе животные умерли. Симуляция завершена.");
+                System.out.println("\nAll the animals died. The simulation is complete.");
                 isRunning = false;
             }
         }
@@ -119,8 +121,8 @@ public class Simulation {
                 Cell cell = island.getCell(row, col);
                 for (LivingEntity entity : cell.getEntities()) {
                     if (entity instanceof Animal animal && animal.isAlive()) {
-                       Future<?> future = executorService.submit(() -> animal.eat(cell));
-                       eatFutures.add(future);
+                        Future<?> future = executorService.submit(() -> animal.eat(cell));
+                        eatFutures.add(future);
                     }
                 }
             }
@@ -173,6 +175,7 @@ public class Simulation {
             }
         }
     }
+
     private boolean areAllAnimalsDead() {
         for (int row = 0; row < island.getRows(); row++) {
             for (int col = 0; col < island.getCols(); col++) {

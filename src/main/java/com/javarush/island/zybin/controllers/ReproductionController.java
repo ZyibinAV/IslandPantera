@@ -53,7 +53,7 @@ public class ReproductionController {
     }
 
     public void reproduceGrass(Grass grass) {
-        throw new UnsupportedOperationException("Reproduce для травы должен вызываться в контексте ячейки.");
+        throw new UnsupportedOperationException("Reproduce for grass must be called in the context of the cell.");
     }
 
 

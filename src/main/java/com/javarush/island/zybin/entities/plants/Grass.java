@@ -61,7 +61,7 @@ public class Grass implements LivingEntity {
     @Override
     public void reproduce() {
         if (reproductionController == null) {
-            throw new IllegalStateException("ReproductionController не установлен.");
+            throw new IllegalStateException("ReproductionController is not installed.");
         }
         reproductionController.reproduceGrass(this);
     }

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 
-
 /**
  * Represents a single cell on the island grid in the simulation.
  * <p>
@@ -31,7 +30,7 @@ public class Cell {
     private final List<LivingEntity> entities;
     private final int row;
     private final int col;
-    private  final ReentrantLock lock = new ReentrantLock();
+    private final ReentrantLock lock = new ReentrantLock();
 
     public Cell(int row, int col) {
         this.entities = new ArrayList<>();
@@ -52,9 +51,9 @@ public class Cell {
     }
 
     public List<LivingEntity> getEntities() {
-         lock.lock();
-        try{
-          return  new ArrayList<>(entities);
+        lock.lock();
+        try {
+            return new ArrayList<>(entities);
         } finally {
             lock.unlock();
         }

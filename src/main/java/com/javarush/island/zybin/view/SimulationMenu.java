@@ -56,25 +56,25 @@ public class SimulationMenu {
                 case 6 -> configureGrassGrowth();
                 case 7 -> startSimulation();
                 case 0 -> {
-                    System.out.println("Выход из программы.");
+                    System.out.println("Exit the program.");
                     return;
                 }
-                default -> System.out.println("Неверный выбор. Попробуйте снова.");
+                default -> System.out.println("Wrong choice. Try again.");
             }
         }
     }
 
     private  void printMenu() {
-        System.out.println("\n=== Меню настройки симуляции ===");
-        System.out.println("1. Показать текущие настройки");
-        System.out.println("2. Настроить размер острова");
-        System.out.println("3. Настроить потерю веса от голода (в %)");
-        System.out.println("4. Настроить начальное количество животных");
-        System.out.println("5. Настроить параметры травы (множитель)");
-        System.out.println("6. Настроить рост травы (в %)");
-        System.out.println("7. Запустить симуляцию");
-        System.out.println("0. Выход");
-        System.out.print("Выберите действие: ");
+        System.out.println("\n===Simulation Setup Menu ===");
+        System.out.println("1. Show current settings");
+        System.out.println("2. Customize island size");
+        System.out.println("3. Adjust weight loss from fasting (in %)");
+        System.out.println("4. Set up initial number of animals");
+        System.out.println("5. Adjust grass parameters (multiplier)");
+        System.out.println("6. Adjust grass growth (in %)");
+        System.out.println("7. Run simulation");
+        System.out.println("0. Exit");
+        System.out.print("Select action: ");
     }
 
     private int readChoice() {
@@ -87,19 +87,19 @@ public class SimulationMenu {
 
 
     private void showCurrentConfig() {
-        System.out.println("\n--- Текущие настройки ---");
-        System.out.println("Размер острова: " + config.islandRows + " x " + config.islandCols);
-        System.out.println("Процент потери веса: " + (config.hungerLossPercent * 100) + "%");
-        System.out.println("Начальное кол-во животных: от " + config.initialAnimalAmount + " до " + (config.initialAnimalAmount + 10000));
-        System.out.println("Множитель травы на ячейку: " + config.grassPerCellMultiplier);
-        System.out.println("Рост травы за такт: " + (config.grassGrowthPercent * 100) + "%");
+        System.out.println("\n--- Current settings ---");
+        System.out.println("Island size: " + config.islandRows + " x " + config.islandCols);
+        System.out.println("Weight loss percentage: " + (config.hungerLossPercent * 100) + "%");
+        System.out.println("Initial number of animals: from" + config.initialAnimalAmount + "to " + (config.initialAnimalAmount + 10000));
+        System.out.println("Grass multiplier per cell: " + config.grassPerCellMultiplier);
+        System.out.println("Grass growth per clock: " + (config.grassGrowthPercent * 100) + "%");
     }
 
     private void configureIslandSize() {
-        System.out.print("Введите количество строк (по умолчанию " + config.islandRows + "): ");
+        System.out.print("Enter the number of rows (default) " + config.islandRows + "): ");
         int rows = readIntWithDefault(config.islandRows);
 
-        System.out.print("Введите количество столбцов (по умолчанию " + config.islandCols + "): ");
+        System.out.print("Enter the number of columns (default " + config.islandCols + "): ");
         int cols = readIntWithDefault(config.islandCols);
 
         this.config = new SimulationConfig(
@@ -108,11 +108,11 @@ public class SimulationMenu {
                 config.grassPerCellMultiplier, config.grassGrowthPercent,
                 config.FEEDING_CHANCES
         );
-        System.out.println("Размер острова изменён на: " + rows + " x " + cols);
+        System.out.println("Island size changed to: " + rows + " x " + cols);
     }
 
     private void configureHungerLoss() {
-        System.out.print("Введите процент потери веса за такт (по умолчанию " + (config.hungerLossPercent * 100) + "%): ");
+        System.out.print("Enter the percentage of weight loss per cycle (default " + (config.hungerLossPercent * 100) + "%): ");
         double percent = readDoubleWithDefault(config.hungerLossPercent * 100);
         double newPercent = percent / 100.0;
 
@@ -122,11 +122,11 @@ public class SimulationMenu {
                 config.grassPerCellMultiplier, config.grassGrowthPercent,
                 config.FEEDING_CHANCES
         );
-        System.out.println("Процент потери веса изменён на: " + percent + "%");
+        System.out.println("Weight loss percentage changed to: " + percent + "%");
     }
 
     private void configureInitialAnimals() {
-        System.out.print("Введите базовое количество животных при расселении (по умолчанию " + config.initialAnimalAmount + "): ");
+        System.out.print("Enter the base number of animals when moving (default " + config.initialAnimalAmount + "): ");
         int amount = readIntWithDefault(config.initialAnimalAmount);
 
         this.config = new SimulationConfig(
@@ -135,11 +135,11 @@ public class SimulationMenu {
                 config.grassPerCellMultiplier, config.grassGrowthPercent,
                 config.FEEDING_CHANCES
         );
-        System.out.println("Базовое количество животных изменено на: " + amount);
+        System.out.println("Base number of animals changed to: " + amount);
     }
 
     private void configureGrassSettings() {
-        System.out.print("Введите множитель количества травы на ячейку (по умолчанию " + config.grassPerCellMultiplier + "): ");
+        System.out.print("Enter a multiplier for the amount of grass per cell (default " + config.grassPerCellMultiplier + "): ");
         int multiplier = readIntWithDefault(config.grassPerCellMultiplier);
 
         this.config = new SimulationConfig(
@@ -148,11 +148,11 @@ public class SimulationMenu {
                 multiplier, config.grassGrowthPercent,
                 config.FEEDING_CHANCES
         );
-        System.out.println("Множитель травы изменён на: " + multiplier);
+        System.out.println("Grass multiplier changed to: " + multiplier);
     }
 
     private void configureGrassGrowth() {
-        System.out.print("Введите процент роста травы за такт (по умолчанию " + (config.grassGrowthPercent * 100) + "%): ");
+        System.out.print("Enter the percentage of grass growth per tick (default" + (config.grassGrowthPercent * 100) + "%): ");
         double percent = readDoubleWithDefault(config.grassGrowthPercent * 100);
         double newPercent = percent / 100.0;
 
@@ -162,11 +162,11 @@ public class SimulationMenu {
                 config.grassPerCellMultiplier, newPercent,
                 config.FEEDING_CHANCES
         );
-        System.out.println("Процент роста травы изменён на: " + percent + "%");
+        System.out.println("Grass growth percentage changed to:" + percent + "%");
     }
 
     private void startSimulation() {
-        System.out.println("\nЗапуск симуляции с текущими настройками...");
+        System.out.println("\nRunning the simulation with current settings...");
         Simulation simulation = new Simulation(config);
         simulation.start();
     }
@@ -179,7 +179,7 @@ public class SimulationMenu {
         try {
             return Integer.parseInt(input);
         } catch (NumberFormatException e) {
-            System.out.println("Неверный ввод. Используется значение по умолчанию: " + defaultValue);
+            System.out.println("Invalid input. The default value is used: " + defaultValue);
             return defaultValue;
         }
     }
@@ -192,7 +192,7 @@ public class SimulationMenu {
         try {
             return Double.parseDouble(input);
         } catch (NumberFormatException e) {
-            System.out.println("Неверный ввод. Используется значение по умолчанию: " + defaultValue);
+            System.out.println("Invalid input. The default value is used: " + defaultValue);
             return defaultValue;
         }
     }

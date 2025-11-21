@@ -2,9 +2,9 @@ package com.javarush.island.zybin.simulation;
 
 import com.javarush.island.zybin.entities.Animal;
 import com.javarush.island.zybin.entities.LivingEntity;
+import com.javarush.island.zybin.entities.plants.Grass;
 import com.javarush.island.zybin.island.Cell;
 import com.javarush.island.zybin.island.Island;
-import com.javarush.island.zybin.entities.plants.Grass;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,22 +59,23 @@ public class StatisticsCollector {
     }
 
     public void incrementBorn(String type) {
-        bornThisTurn.computeIfAbsent(type, k-> new AtomicInteger(0)).incrementAndGet();
+        bornThisTurn.computeIfAbsent(type, k -> new AtomicInteger(0)).incrementAndGet();
     }
 
     public void incrementEaten(String type) {
-        eatenThisTurn.computeIfAbsent(type, k-> new AtomicInteger(0)).incrementAndGet();
+        eatenThisTurn.computeIfAbsent(type, k -> new AtomicInteger(0)).incrementAndGet();
     }
 
     public void incrementDied(String type) {
-        diedThisTurn.computeIfAbsent(type, k-> new AtomicInteger(0)).incrementAndGet();
+        diedThisTurn.computeIfAbsent(type, k -> new AtomicInteger(0)).incrementAndGet();
     }
+
     public void incrementTurn() {
         currentTurn.incrementAndGet();
     }
 
     public void printStats() {
-        System.out.println("\n Такт: " + currentTurn.get());
+        System.out.println("\n Tact: " + currentTurn.get());
         System.out.println("============================");
 
         Map<String, Integer> totals = new HashMap<>();
@@ -90,28 +91,28 @@ public class StatisticsCollector {
         for (var entry : totals.entrySet()) {
             System.out.printf("  %s: %d%n", entry.getKey(), entry.getValue());
         }
-        System.out.println("\n За такт:");
-        System.out.println("Рождено:");
+        System.out.println("\n Per beat:");
+        System.out.println("Born:");
         for (var entry : bornThisTurn.entrySet()) {
             System.out.printf(" %s: %d%n", entry.getKey(), entry.getValue().get());
         }
-        System.out.println("Сьедено:");
+        System.out.println("Seated:");
         for (var entry : eatenThisTurn.entrySet()) {
             System.out.printf(" %s: %d%n", entry.getKey(), entry.getValue().get());
         }
-        System.out.println("Умерло:");
+        System.out.println("Died:");
         for (var entry : diedThisTurn.entrySet()) {
             System.out.printf(" %s: %d%n", entry.getKey(), entry.getValue().get());
         }
         System.out.println("=====================================");
     }
 
-    private String getEntityType( LivingEntity entity ) {
+    private String getEntityType(LivingEntity entity) {
         if (entity instanceof Animal) {
             return ((Animal) entity).getType();
         } else if (entity instanceof Grass) {
             return "Grass";
         }
-        return  "Unknown";
+        return "Unknown";
     }
 }
